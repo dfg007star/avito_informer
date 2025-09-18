@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Masterminds/squirrel"
-	"github.com/dfg007star/avito_informer/internal/model"
+	"github.com/dfg007star/avito_informer/http/internal/model"
 )
 
 func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {

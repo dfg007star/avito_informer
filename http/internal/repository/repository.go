@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/dfg007star/avito_informer/internal/model"
+	"github.com/dfg007star/avito_informer/http/internal/model"
 )
 
-type OrderRepository interface {
+type LinkRepository interface {
 	GetAllLinks(ctx context.Context, orderUuid string) ([]*model.Link, error)
 }
