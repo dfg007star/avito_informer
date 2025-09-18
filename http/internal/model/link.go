@@ -16,6 +16,7 @@ type Link struct {
 	Url       string       `gorm:"type:text"`
 	CreatedAt sql.NullTime `gorm:"type:TIMESTAMP"`
 	ParsedAt  sql.NullTime `gorm:"type:TIMESTAMP NULL"`
+	Items     []Item       `gorm:"foreignKey:LinkID"`
 }
 
 func (Link) TableName() string {
