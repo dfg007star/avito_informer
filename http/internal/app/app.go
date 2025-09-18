@@ -23,13 +23,6 @@ func New(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run(ctx context.Context) error {
-	// Канал для ошибок от компонентов
-	errCh := make(chan error, 1)
-
-	// Контекст для остановки всех горутин
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	err := a.runHTTPServer(ctx)
 	if err != nil {
 		fmt.Errorf("http server crashed: %v", err)

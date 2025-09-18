@@ -13,6 +13,7 @@ import (
 )
 
 type diContainer struct {
+	linkHandler    handler.LinkHandler
 	linkService    service.LinkService
 	linkRepository repository.LinkRepository
 
