@@ -11,6 +11,15 @@ type App struct {
 	httpServer  *http.Server
 }
 
+func (a *App) Run(ctx context.Context) error {
+	err := a.runHTTPServer(ctx)
+	if err != nil {
+		fmt.Errorf("http server crashed: %v", err)
+	}
+
+	return nil
+}
+
 func New(ctx context.Context) (*App, error) {
 	a := &App{}
 
@@ -20,15 +29,6 @@ func New(ctx context.Context) (*App, error) {
 	}
 
 	return a, nil
-}
-
-func (a *App) Run(ctx context.Context) error {
-	err := a.runHTTPServer(ctx)
-	if err != nil {
-		fmt.Errorf("http server crashed: %v", err)
-	}
-
-	return nil
 }
 
 func (a *App) initDeps(ctx context.Context) error {
