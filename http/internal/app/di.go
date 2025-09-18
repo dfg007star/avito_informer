@@ -3,12 +3,17 @@ package internal
 import (
 	"context"
 	"fmt"
+
+	"github.com/dfg007star/avito_informer/http/internal/config"
 	repository "github.com/dfg007star/avito_informer/http/internal/repository"
 	linkRepository "github.com/dfg007star/avito_informer/http/internal/repository/link"
+	"github.com/dfg007star/avito_informer/http/internal/service"
+	linkService "github.com/dfg007star/avito_informer/http/internal/service/link"
 	"github.com/jackc/pgx/v5"
 )
 
 type diContainer struct {
+	linkService    service.LinkService
 	linkRepository repository.LinkRepository
 
 	postgresClient *pgx.Conn
@@ -16,6 +21,14 @@ type diContainer struct {
 
 func NewDiContainer() *diContainer {
 	return &diContainer{}
+}
+
+func (d *diContainer) LinkService(ctx context.Context) service.LinkService {
+	if d.linkService == nil {
+		d.linkService = linkService.NewLinkService(d.LinkService(ctx))
+	}
+
+	return d.linkService
 }
 
 func (d *diContainer) LinkRepository(ctx context.Context) repository.LinkRepository {

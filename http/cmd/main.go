@@ -4,7 +4,7 @@ import "fmt"
 
 import (
 	"context"
-	"github.com/dfg007star/avito_informer/http/internal/app"
+	app "github.com/dfg007star/avito_informer/http/internal/app"
 	"github.com/dfg007star/avito_informer/http/internal/config"
 	"os/signal"
 	"syscall"

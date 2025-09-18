@@ -3,8 +3,11 @@ package link
 import (
 	"context"
 	"fmt"
+
 	"github.com/Masterminds/squirrel"
 	"github.com/dfg007star/avito_informer/http/internal/model"
+	"github.com/dfg007star/avito_informer/http/internal/repository/converter"
+	repoModel "github.com/dfg007star/avito_informer/http/internal/repository/model"
 )
 
 func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
@@ -22,9 +25,9 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 	}
 	defer rows.Close()
 
-	var links []*model.Link
+	var links []*repoModel.Link
 	for rows.Next() {
-		var l model.Link
+		var l repoModel.Link
 		err := rows.Scan(
 			&l.ID,
 			&l.Name,
@@ -42,7 +45,12 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 		return nil, fmt.Errorf("rows iteration error: %w", err)
 	}
 
-	return links, nil
+	var result []*model.Link
+	for _, link := range links {
+		result = append(result, converter.RepoLinkToModel(link))
+	}
+
+	return result, nil
 }
 
 func (r *repository) GetLinkById(ctx context.Context, id string) (*model.Link, error) {
@@ -57,7 +65,7 @@ func (r *repository) GetLinkById(ctx context.Context, id string) (*model.Link, e
 
 	row := r.db.QueryRow(ctx, query, args...)
 
-	var link model.Link
+	var link repoModel.Link
 
 	err = row.Scan(
 		&link.ID,
@@ -70,7 +78,7 @@ func (r *repository) GetLinkById(ctx context.Context, id string) (*model.Link, e
 		return nil, fmt.Errorf("failed to scan row: %w", err)
 	}
 
-	return &link, nil
+	return converter.RepoLinkToModel(&link), nil
 }
 
 func (r *repository) GetLinkItems(ctx context.Context, link *model.Link) ([]*model.Item, error) {
@@ -101,12 +109,12 @@ func (r *repository) GetLinkItems(ctx context.Context, link *model.Link) ([]*mod
 	}
 	defer rows.Close()
 
-	var items []*model.Item
+	var items []repoModel.Item
 	for rows.Next() {
-		var item model.Item
+		var item repoModel.Item
 		err := rows.Scan(
 			&item.ID,
-			&item.LinkID,
+			&item.LinkId,
 			&item.Uid,
 			&item.Title,
 			&item.Description,
@@ -119,12 +127,17 @@ func (r *repository) GetLinkItems(ctx context.Context, link *model.Link) ([]*mod
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan item: %w", err)
 		}
-		items = append(items, &item)
+		items = append(items, item)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows iteration error: %w", err)
 	}
 
-	return items, nil
+	var result []*model.Item
+	for _, item := range items {
+		result = append(result, converter.RepoItemToModel(&item))
+	}
+
+	return result, nil
 }
