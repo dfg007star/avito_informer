@@ -12,10 +12,10 @@ var (
 
 type Link struct {
 	gorm.Model
-	Items    []Item
-	Name     string       `gorm:"type:text"`
-	Url      string       `gorm:"type:text"`
-	ParsedAt sql.NullTime `gorm:"type:TIMESTAMP NULL"`
+	Name      string       `gorm:"type:text"`
+	Url       string       `gorm:"type:text"`
+	CreatedAt sql.NullTime `gorm:"type:TIMESTAMP"`
+	ParsedAt  sql.NullTime `gorm:"type:TIMESTAMP NULL"`
 }
 
 func (Link) TableName() string {
