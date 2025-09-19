@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/dfg007star/avito_informer/http/internal/model"
 	"github.com/dfg007star/avito_informer/http/internal/service"
 )
 
@@ -21,15 +20,15 @@ func NewHandler(linkService service.LinkService, templates *template.Template) *
 }
 
 func (h *handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	links, err := h.linkService.GetAllLinks(r.Context())
-	if err != nil {
-		links = []*model.Link{}
-	}
+	//links, err := h.linkService.GetAllLinks(r.Context())
+	//if err != nil {
+	//	links = []*model.Link{}
+	//}
 
 	data := map[string]any{
-		"Links": links,
+		"Links": "dd",
 	}
-	err = h.templates.ExecuteTemplate(w, "index", data)
+	err := h.templates.ExecuteTemplate(w, "index", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

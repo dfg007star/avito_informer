@@ -1,0 +1,8 @@
+{{ define "links_index" }}
+<br/>
+<div id="links_list">
+    {{ range .Links }}
+    {{ block "links_link" . }}{{ end }}
+    {{ end }}
+</div>
+{{ end }}

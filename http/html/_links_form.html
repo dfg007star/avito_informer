@@ -1,0 +1,13 @@
+{{ define "links_form" }}
+<div>
+    <form hx-post="/links" hx-target="#links_list" hx-swap="beforeend">
+        <fieldset class="flex one">
+            <label><input type="text" name="name" placeholder="name"/></label>
+            <br/>
+            <label><input type="text" name="url" placeholder="url"/></label>
+            <br/>
+        </fieldset>
+        <input type="submit" value="Create" class="button"/>
+    </form>
+</div>
+{{ end }}

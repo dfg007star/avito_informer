@@ -5,7 +5,7 @@ import (
 
 	"github.com/pressly/goose/v3"
 
-	"github.com/dfg007star/go_rocket/platform/pkg/migrator"
+	"github.com/dfg007star/avito_informer/platform/pkg/migrator"
 )
 
 type PostgresMigrator struct {

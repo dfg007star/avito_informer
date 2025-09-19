@@ -1,7 +1,5 @@
 github.com/dfg007star/avito_informer/platform v0.0.0-20250919064631-0042b88c3c2f h1:Q0gLR4eo36PEyqTk3AWEraCPobYaOQA3YuG5BtgqRB8=
 github.com/dfg007star/avito_informer/platform v0.0.0-20250919064631-0042b88c3c2f/go.mod h1:qIBwYx1k7eqzaDbXw49Ph5wK9ig2MdbdGePEEU8UF+8=
-github.com/dfg007star/go_rocket/platform v0.0.0-20250909172015-3e201a8d0d9f h1:2fhQTt5yDxQwUq0H+QsoYsLkSi9wOWJ18rz+L75YD9k=
-github.com/dfg007star/go_rocket/platform v0.0.0-20250909172015-3e201a8d0d9f/go.mod h1:2QINn19jB/B+OJW0WBpFzPLheoqJyqS2AxvN/rj9jGM=
 github.com/mfridman/interpolate v0.0.2 h1:pnuTK7MQIxxFz1Gr+rjSIx9u7qVjf5VOoM/u6BbAxPY=
 github.com/mfridman/interpolate v0.0.2/go.mod h1:p+7uk6oE07mpE/Ik1b8EckO0O4ZXiGAfshKBWLUM9Xg=
 github.com/pressly/goose/v3 v3.25.0 h1:6WeYhMWGRCzpyd89SpODFnCBCKz41KrVbRT58nVjGng=

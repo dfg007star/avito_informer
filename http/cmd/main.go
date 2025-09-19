@@ -4,13 +4,14 @@ import "fmt"
 
 import (
 	"context"
-	app "github.com/dfg007star/avito_informer/http/internal/app"
-	"github.com/dfg007star/avito_informer/http/internal/config"
 	"os/signal"
 	"syscall"
+
+	app "github.com/dfg007star/avito_informer/http/internal/app"
+	"github.com/dfg007star/avito_informer/http/internal/config"
 )
 
-const configPath = "../../deploy/compose/core/.env"
+const configPath = "../deploy/compose/core/.env"
 
 func main() {
 	err := config.Load(configPath)

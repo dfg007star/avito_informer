@@ -60,7 +60,7 @@ func (d *diContainer) LinkHandler(ctx context.Context) handler.LinkHandler {
 
 func (d *diContainer) LinkService(ctx context.Context) service.LinkService {
 	if d.linkService == nil {
-		d.linkService = linkService.NewLinkService(d.LinkService(ctx))
+		d.linkService = linkService.NewLinkService(d.LinkRepository(ctx))
 	}
 
 	return d.linkService
