@@ -7,11 +7,6 @@ import (
 )
 
 func RepoLinkToModel(link *repoModel.Link) *model.Link {
-	createdAt := time.Now()
-	if link.CreatedAt.Valid {
-		createdAt = link.CreatedAt.Time
-	}
-
 	var parsedAt *time.Time
 	if link.ParsedAt.Valid {
 		t := link.ParsedAt.Time
@@ -20,10 +15,6 @@ func RepoLinkToModel(link *repoModel.Link) *model.Link {
 
 	items := make([]*model.Item, len(link.Items))
 	for i, dbItem := range link.Items {
-		created := time.Now()
-		if dbItem.CreatedAt.Valid {
-			created = dbItem.CreatedAt.Time
-		}
 		items[i] = &model.Item{
 			ID:          int64(dbItem.ID),
 			LinkId:      int64(dbItem.LinkId),
@@ -34,15 +25,15 @@ func RepoLinkToModel(link *repoModel.Link) *model.Link {
 			PreviewUrl:  dbItem.PreviewUrl,
 			Price:       dbItem.Price,
 			NeedNotify:  dbItem.NeedNotify,
-			CreatedAt:   created,
+			CreatedAt:   dbItem.CreatedAt,
 		}
 	}
 
 	return &model.Link{
-		ID:        link.ID,
+		ID:        int64(link.ID),
 		Name:      link.Name,
 		Url:       link.Url,
-		CreatedAt: createdAt,
+		CreatedAt: link.CreatedAt,
 		ParsedAt:  parsedAt,
 		Items:     items,
 	}

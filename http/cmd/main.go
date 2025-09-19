@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-const configPath = "../deploy/.env"
+const configPath = "../../deploy/compose/core/.env"
 
 func main() {
 	err := config.Load(configPath)
@@ -23,13 +23,13 @@ func main() {
 
 	a, err := app.New(appCtx)
 	if err != nil {
-		fmt.Errorf("failed to create http app", err)
+		fmt.Errorf("failed to create http app: %w", err)
 		return
 	}
 
 	err = a.Run(appCtx)
 	if err != nil {
-		fmt.Errorf("failed to run http app", err)
+		fmt.Errorf("failed to run http app: %w", err)
 		return
 	}
 }
