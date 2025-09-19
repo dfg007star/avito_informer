@@ -10,6 +10,7 @@ var appConfig *config
 
 type config struct {
 	Postgres PostgresConfig
+	HTTP     HTTPConfig
 }
 
 func Load(path ...string) error {
@@ -23,8 +24,14 @@ func Load(path ...string) error {
 		return err
 	}
 
+	HTTPConfig, err := env.NewHTTPConfig()
+	if err != nil {
+		return err
+	}
+
 	appConfig = &config{
 		Postgres: PostgresCfg,
+		HTTP:     HTTPConfig,
 	}
 
 	return nil
