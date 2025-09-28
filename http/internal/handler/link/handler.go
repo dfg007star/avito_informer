@@ -2,8 +2,10 @@ package link
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 
+	"github.com/dfg007star/avito_informer/http/internal/model"
 	"github.com/dfg007star/avito_informer/http/internal/service"
 )
 
@@ -20,37 +22,37 @@ func NewHandler(linkService service.LinkService, templates *template.Template) *
 }
 
 func (h *handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	//links, err := h.linkService.GetAllLinks(r.Context())
-	//if err != nil {
-	//	links = []*model.Link{}
-	//}
+	links, err := h.linkService.GetAllLinks(r.Context())
+	if err != nil {
+		links = []*model.Link{}
+	}
 
 	data := map[string]any{
-		"Links": "dd",
+		"Links": links,
 	}
-	err := h.templates.ExecuteTemplate(w, "index", data)
+	err = h.templates.ExecuteTemplate(w, "index", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-// func (h *Handler) CreateLinkHandler(w http.ResponseWriter, r *http.Request) {
-// 	name := r.FormValue("name")
-// 	linkUrl := r.FormValue("url")
-// 	link := &domain.Link{
-// 		Name: name,
-// 		Url:  linkUrl,
-// 	}
-// 	_, err := h.service.CreateLink(r.Context(), link)
-// 	if err != nil {
-// 		log.Fatal("<CreateHandler> Error creating link!")
-// 	}
-// 	err = h.templates.ExecuteTemplate(w, "links_link", extendLink(link))
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 	}
-// }
-//
+func (h *handler) CreateLinkHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.FormValue("name")
+	linkUrl := r.FormValue("url")
+	link := &model.Link{
+		Name: name,
+		Url:  linkUrl,
+	}
+	_, err := h.linkService.CreateLink(r.Context(), link)
+	if err != nil {
+		log.Fatal("<CreateHandler> Error creating link!")
+	}
+	err = h.templates.ExecuteTemplate(w, "links_link", extendLink(link))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // func (h *Handler) ShowLinkHandler(w http.ResponseWriter, r *http.Request) {
 // 	id := r.PathValue("id")
 // 	link := h.service.GetLinkById(r.Context(), id)

@@ -34,9 +34,9 @@ func (d *diContainer) LinkRouter(ctx context.Context, handler handler.LinkHandle
 		r := http.NewServeMux()
 		r.Handle("/", http.FileServer(http.Dir("./static/")))
 		r.HandleFunc("GET /{$}", handler.IndexHandler)
-		// r.HandleFunc("POST /links", handler.CreateLinkHandler)
-		// r.HandleFunc("DELETE /links/{id}", handler.DeleteLinkHandler)
-		// r.HandleFunc("GET /links/{id}", handler.ShowLinkHandler)
+		r.HandleFunc("POST /links", handler.CreateLinkHandler)
+		r.HandleFunc("DELETE /links/{id}", handler.DeleteLinkHandler)
+		r.HandleFunc("GET /links/{id}", handler.ShowLinkHandler)
 		// r.HandleFunc("POST /links/{id}/parse", handler.ParseLinkHandler)
 
 		d.linkRouter = r
