@@ -10,8 +10,8 @@ vars:
   GOFUMPT: '{{.BIN_DIR}}/gofumpt'
   ENVDIR: '{{.ROOT_DIR}}/deploy/env'
 
-  MODULES: http
-  SERVICES: http
+  MODULES: http collector platform
+  SERVICES: http collector platform
 
 tasks:
   deps:update:

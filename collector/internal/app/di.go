@@ -3,8 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"html/template"
-	"net/http"
 
 	"github.com/dfg007star/avito_informer/collector/internal/config"
 	repository "github.com/dfg007star/avito_informer/collector/internal/repository"

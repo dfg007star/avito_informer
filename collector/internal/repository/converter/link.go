@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"github.com/dfg007star/avito_informer/converter/internal/model"
-	repoModel "github.com/dfg007star/avito_informer/converter/internal/repository/model"
+	"github.com/dfg007star/avito_informer/collector/internal/model"
+	repoModel "github.com/dfg007star/avito_informer/collector/internal/repository/model"
 	"time"
 )
 
