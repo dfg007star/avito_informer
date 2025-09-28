@@ -9,11 +9,7 @@
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <div>
                 <a class="button" href="/links/{{ .ID }}">Show</a>
-                {{ if .CanParseAgain }}
-                    <a hx-post="/links/{{ .ID }}/parse" class='button'>Parse</a>
-                {{ else }}
-                    <button disabled>Parse</button>
-                {{ end }}
+                <a hx-post="/links/{{ .ID }}/parse" class='button'>Parse</a>
             </div>
 
             <div>

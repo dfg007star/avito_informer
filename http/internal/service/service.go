@@ -11,4 +11,5 @@ type LinkService interface {
 	GetLinkById(ctx context.Context, id string) (*model.Link, error)
 	GetLinkItems(ctx context.Context, link *model.Link) ([]*model.Item, error)
 	CreateLink(ctx context.Context, link *model.Link) (*model.Link, error)
+	DeleteLink(ctx context.Context, id string) error
 }

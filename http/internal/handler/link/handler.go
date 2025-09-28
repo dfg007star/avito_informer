@@ -1,6 +1,7 @@
 package link
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -43,34 +44,40 @@ func (h *handler) CreateLinkHandler(w http.ResponseWriter, r *http.Request) {
 		Name: name,
 		Url:  linkUrl,
 	}
-	_, err := h.linkService.CreateLink(r.Context(), link)
+	result, err := h.linkService.CreateLink(r.Context(), link)
+	fmt.Println("handler create link", result, err)
 	if err != nil {
-		log.Fatal("<CreateHandler> Error creating link!")
+		log.Fatalf("error creating link: %", err)
 	}
-	err = h.templates.ExecuteTemplate(w, "links_link", extendLink(link))
+	err = h.templates.ExecuteTemplate(w, "links_link", result)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-// func (h *Handler) ShowLinkHandler(w http.ResponseWriter, r *http.Request) {
-// 	id := r.PathValue("id")
-// 	link := h.service.GetLinkById(r.Context(), id)
-// 	if link == nil {
-// 		http.NotFound(w, r)
-// 	}
-// 	options := r.URL.Query()
-// 	items := h.service.GetLinkItems(r.Context(), link, &options)
-// 	data := map[string]any{
-// 		"ItemsLength": len(items),
-// 		"LinkID":      id,
-// 		"Items":       items,
-// 	}
-// 	err := h.templates.ExecuteTemplate(w, "link", data)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 	}
-// }
+func (h *handler) ShowLinkHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	link, err := h.linkService.GetLinkById(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	if link == nil {
+		http.NotFound(w, r)
+	}
+	//TODO: options its params from url
+	//options := r.URL.Query()
+	items, err := h.linkService.GetLinkItems(r.Context(), link)
+	data := map[string]any{
+		"ItemsLength": len(items),
+		"LinkID":      id,
+		"Items":       items,
+	}
+	err = h.templates.ExecuteTemplate(w, "link", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 //
 // func (h *Handler) ParseLinkHandler(w http.ResponseWriter, r *http.Request) {
 // 	id := r.PathValue("id")
@@ -86,12 +93,13 @@ func (h *handler) CreateLinkHandler(w http.ResponseWriter, r *http.Request) {
 // 		http.Error(w, err.Error(), http.StatusInternalServerError)
 // 	}
 // }
-//
-// func (h *Handler) DeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
-// 	id := r.PathValue("id")
-// 	err := h.service.DeleteLink(r.Context(), id)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 	}
-// 	w.WriteHeader(200)
-// }
+
+func (h *handler) DeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	err := h.linkService.DeleteLink(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(200)
+}
