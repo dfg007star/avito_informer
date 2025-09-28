@@ -3,7 +3,7 @@ package link
 import (
 	"context"
 
-	"github.com/dfg007star/avito_informer/converter/internal/model"
+	"github.com/dfg007star/avito_informer/collector/internal/model"
 )
 
 func (s *service) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
