@@ -16,14 +16,14 @@ func (r *repository) CreateItems(ctx context.Context, items []*model.Item) error
 	fmt.Printf("creating %d items\n", len(items))
 
 	queryBuilder := squirrel.Insert("items").
-		Columns("link_id", "title", "price", "description", "url")
+		Columns("uid", "link_id", "title", "price", "description", "url", "preview_url")
 
 	for _, item := range items {
-		queryBuilder = queryBuilder.Values(item.LinkId, item.Title, item.Price, item.Description, item.Url)
+		queryBuilder = queryBuilder.Values(item.Uid, item.LinkId, item.Title, item.Price, item.Description, item.Url, item.PreviewUrl)
 	}
 
 	query, args, err := queryBuilder.
-		Suffix("ON CONFLICT (url) DO NOTHING").
+		Suffix("ON CONFLICT (uid) DO NOTHING").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 

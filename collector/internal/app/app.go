@@ -12,15 +12,24 @@ type App struct {
 }
 
 func (a *App) Run(ctx context.Context) error {
+	defer a.diContainer.Parser().Shutdown()
 	return a.collect(ctx)
 }
 
 func (a *App) collect(ctx context.Context) error {
 	parser := a.diContainer.Parser()
-	//proxyURL := "https://"
+	//proxyURL := "http://LUXzR9:QV93K7@185.202.2.10:8000"
 	//if err := parser.SetProxies([]string{proxyURL}); err != nil {
 	//	return fmt.Errorf("failed to set proxies: %w", err)
 	//}
+
+	// Get initial cookies
+	dummyAvitoURL := "https://www.avito.ru/moskva/telefony?q=iphone" // Example URL
+	initialCookies, err := parser.GetCookies(ctx, dummyAvitoURL)
+	if err != nil {
+		return fmt.Errorf("failed to get initial cookies: %w", err)
+	}
+	fmt.Printf("Initial cookies obtained: %v\n", initialCookies)
 
 	for {
 		fmt.Println("starting new collection cycle")
@@ -33,7 +42,7 @@ func (a *App) collect(ctx context.Context) error {
 
 		for _, link := range links {
 			fmt.Printf("collecting items for link: %s\n", link.Url)
-			items, err := parser.Parse(link)
+			items, err := parser.Parse(link, initialCookies) // Pass cookies to Parse
 			if err != nil {
 				fmt.Printf("failed to parse link %s: %s\n", link.Url, err)
 				continue

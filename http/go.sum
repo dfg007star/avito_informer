@@ -7,8 +7,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dfg007star/avito_informer/platform v0.0.0-20250919064631-0042b88c3c2f h1:Q0gLR4eo36PEyqTk3AWEraCPobYaOQA3YuG5BtgqRB8=
 github.com/dfg007star/avito_informer/platform v0.0.0-20250919064631-0042b88c3c2f/go.mod h1:qIBwYx1k7eqzaDbXw49Ph5wK9ig2MdbdGePEEU8UF+8=
-github.com/dfg007star/go_rocket/platform v0.0.0-20250909172015-3e201a8d0d9f h1:2fhQTt5yDxQwUq0H+QsoYsLkSi9wOWJ18rz+L75YD9k=
-github.com/dfg007star/go_rocket/platform v0.0.0-20250909172015-3e201a8d0d9f/go.mod h1:2QINn19jB/B+OJW0WBpFzPLheoqJyqS2AxvN/rj9jGM=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=

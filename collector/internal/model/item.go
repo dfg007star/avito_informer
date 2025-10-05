@@ -17,6 +17,7 @@ type Item struct {
 	Description string
 	Url         string
 	PreviewUrl  string
+	ImageUrls   []string // New field for additional image URLs
 	Price       int
 	NeedNotify  bool
 	CreatedAt   time.Time
