@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	app "github.com/dfg007star/avito_informer/http/internal/app"
+	"github.com/dfg007star/avito_informer/http/internal/app"
 	"github.com/dfg007star/avito_informer/http/internal/config"
 )
 

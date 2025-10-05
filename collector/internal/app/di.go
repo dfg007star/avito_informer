@@ -5,16 +5,16 @@ import (
 	"fmt"
 
 	"github.com/dfg007star/avito_informer/collector/internal/config"
-	repository "github.com/dfg007star/avito_informer/collector/internal/repository"
-	linkRepository "github.com/dfg007star/avito_informer/collector/internal/repository/link"
+	"github.com/dfg007star/avito_informer/collector/internal/parser"
+	"github.com/dfg007star/avito_informer/collector/internal/repository"
 	"github.com/dfg007star/avito_informer/collector/internal/service"
-	linkService "github.com/dfg007star/avito_informer/collector/internal/service/link"
 	"github.com/jackc/pgx/v5"
 )
 
 type diContainer struct {
-	linkService    service.LinkService
-	linkRepository repository.LinkRepository
+	service    *service.Service
+	repository *repository.Repository
+	parser     *parser.Parser
 
 	postgresClient *pgx.Conn
 }
@@ -23,20 +23,28 @@ func NewDiContainer() *diContainer {
 	return &diContainer{}
 }
 
-func (d *diContainer) LinkService(ctx context.Context) service.LinkService {
-	if d.linkService == nil {
-		d.linkService = linkService.NewLinkService(d.LinkRepository(ctx))
+func (d *diContainer) Parser() *parser.Parser {
+	if d.parser == nil {
+		d.parser = parser.NewParser()
 	}
 
-	return d.linkService
+	return d.parser
 }
 
-func (d *diContainer) LinkRepository(ctx context.Context) repository.LinkRepository {
-	if d.linkRepository == nil {
-		d.linkRepository = linkRepository.NewRepository(d.PostgresClient(ctx))
+func (d *diContainer) Service(ctx context.Context) *service.Service {
+	if d.service == nil {
+		d.service = service.New(d.Repository(ctx))
 	}
 
-	return d.linkRepository
+	return d.service
+}
+
+func (d *diContainer) Repository(ctx context.Context) *repository.Repository {
+	if d.repository == nil {
+		d.repository = repository.New(d.PostgresClient(ctx))
+	}
+
+	return d.repository
 }
 
 func (d *diContainer) PostgresClient(ctx context.Context) *pgx.Conn {

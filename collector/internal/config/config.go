@@ -1,9 +1,10 @@
 package config
 
 import (
+	"os"
+
 	"github.com/dfg007star/avito_informer/collector/internal/config/env"
 	"github.com/joho/godotenv"
-	"os"
 )
 
 var appConfig *config
@@ -21,9 +22,6 @@ func Load(path ...string) error {
 	PostgresCfg, err := env.NewPostgresConfig()
 	if err != nil {
 		return err
-	}
-
-return err
 	}
 
 	appConfig = &config{
