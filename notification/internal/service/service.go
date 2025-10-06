@@ -8,6 +8,7 @@ import (
 
 type ItemService interface {
 	GetItems(ctx context.Context) ([]*model.Item, error)
+	GetNotNotifiedItems(ctx context.Context) ([]*model.Item, error)
 	UpdateItem(ctx context.Context, item *model.Item) error
 }
 

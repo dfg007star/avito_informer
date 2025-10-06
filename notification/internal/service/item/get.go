@@ -14,3 +14,12 @@ func (s *service) GetItems(ctx context.Context) ([]*model.Item, error) {
 
 	return items, nil
 }
+
+func (s *service) GetNotNotifiedItems(ctx context.Context) ([]*model.Item, error) {
+	items, err := s.itemRepository.GetNotNotifiedItems(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
