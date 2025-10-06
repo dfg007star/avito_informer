@@ -2,28 +2,24 @@ package item
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/dfg007star/avito_informer/notification/internal/model"
-	repoModel "github.com/dfg007star/avito_informer/notification/internal/repository/model"
-	"gorm.io/gorm"
 )
 
 func (r *repository) UpdateItem(ctx context.Context, item *model.Item) error {
-	repoItem := repoModel.Item{
-		Model:       gorm.Model{ID: uint(item.ID)},
-		LinkId:      item.LinkId,
-		Uid:         item.Uid,
-		Title:       item.Title,
-		Description: item.Description,
-		Url:         item.Url,
-		PreviewUrl:  item.PreviewUrl,
-		Price:       item.Price,
-		NeedNotify:  item.NeedNotify,
+	query, args, err := squirrel.Update("items").
+		Set("need_notify", item.NeedNotify).
+		Where(squirrel.Eq{"id": item.ID}).
+		PlaceholderFormat(squirrel.Dollar).ToSql()
+	if err != nil {
+		return fmt.Errorf("failed to build update query: %w", err)
 	}
 
-	err := r.db.WithContext(ctx).Save(&repoItem).Error
+	_, err = r.db.Exec(ctx, query, args...)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to execute update query: %w", err)
 	}
 
 	return nil

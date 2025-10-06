@@ -3,27 +3,33 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/dfg007star/avito_informer/notification/internal/app"
+	"github.com/dfg007star/avito_informer/notification/internal/config"
 )
 
+const configPath = "../deploy/compose/core/.env"
+
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer cancel()
-
-	application, err := app.New(ctx)
+	err := config.Load(configPath)
 	if err != nil {
-		fmt.Printf("failed to create app: %v\n", err)
-		os.Exit(1)
+		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 
-	if err := application.Run(ctx); err != nil {
-		fmt.Printf("app stopped with error: %v\n", err)
-		os.Exit(1)
+	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer appCancel()
+
+	a, err := app.New(appCtx)
+	if err != nil {
+		fmt.Errorf("failed to create notification service: %w", err)
+		return
 	}
 
-	fmt.Println("app stopped gracefully")
+	err = a.Run(appCtx)
+	if err != nil {
+		fmt.Errorf("failed to run notification service: %w", err)
+		return
+	}
 }
