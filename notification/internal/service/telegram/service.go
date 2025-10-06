@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"context"
 	"embed"
-	"text/template"
+	"html/template"
+	"strings"
 
 	"github.com/dfg007star/avito_informer/notification/internal/client/http"
 	"github.com/dfg007star/avito_informer/notification/internal/config"
@@ -15,8 +16,26 @@ import (
 var templateFS embed.FS
 
 var (
-	itemTemplate = template.Must(template.ParseFS(templateFS, "templates/item_notification.tmpl"))
+	itemTemplate *template.Template
 )
+
+func init() {
+	funcMap := template.FuncMap{
+		"escapeHTML": escapeHTML,
+	}
+
+	itemTemplate = template.Must(template.New("item_notification.tmpl").Funcs(funcMap).ParseFS(templateFS, "templates/item_notification.tmpl"))
+}
+
+func escapeHTML(s string) string {
+	replacer := strings.NewReplacer(
+		"&", "&amp;",
+		"<", "&lt;",
+		">", "&gt;",
+		"\"", "&quot;",
+	)
+	return replacer.Replace(s)
+}
 
 type service struct {
 	telegramClient http.TelegramClient

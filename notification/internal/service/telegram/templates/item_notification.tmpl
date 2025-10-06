@@ -1,9 +1,9 @@
-*️⃣ {{.Title}}
+&#x2734;&#xFE0F; <b>{{.Title | escapeHTML}}</b>
 
-📝 {{.Description}}
+&#x1F4DD; {{.Description | escapeHTML}}
 
-💰 **Price:** {{.Price}}
+&#x1F4B0; <b>Цена:</b> {{.Price}}
 
-🔗 **Link:** {{.Url}}
+&#x1F517; <a href="{{.Url | escapeHTML}}">Ссылка</a>
 
-⏰ **Posted At:** {{.CreatedAt.Format "2006-01-02 15:04:05"}}
+&#x23F0; <b>Опубликовано:</b> {{.CreatedAt.Format "02.01.2006 15:04:05"}}

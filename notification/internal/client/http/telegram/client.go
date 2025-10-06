@@ -20,7 +20,7 @@ func (c *client) SendMessage(ctx context.Context, chatID int64, text string) err
 	_, err := c.bot.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    chatID,
 		Text:      text,
-		ParseMode: "Markdown",
+		ParseMode: "HTML",
 	})
 	if err != nil {
 		return err
