@@ -13,7 +13,9 @@ type Item struct {
 	Url         string `gorm:"type:text"`
 	PreviewUrl  string `gorm:"type:text"`
 	Price       int    `gorm:"type:int"`
-	NeedNotify  bool   `gorm:"type:boolean"`
+	IsNotify    bool   `gorm:"type:boolean"`
+
+	CategoryTitle string `gorm:"type:text"`
 }
 
 func (Item) TableName() string {

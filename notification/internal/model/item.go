@@ -19,15 +19,18 @@ type Item struct {
 	PreviewUrl  string
 	ImageUrls   []string
 	Price       int
-	NeedNotify  bool
+	IsNotify    bool
 	CreatedAt   time.Time
+
+	CategoryTitle string
 }
 
 type ItemEvent struct {
-	Title       string
-	Description string
-	Url         string
-	PreviewUrl  string
-	Price       int
-	CreatedAt   time.Time
+	Title         string
+	CategoryTitle string
+	Description   string
+	Url           string
+	PreviewUrl    string
+	Price         int
+	CreatedAt     time.Time
 }

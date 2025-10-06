@@ -15,7 +15,7 @@ func RepoItemToModel(item *repoModel.Item) *model.Item {
 		Url:         item.Url,
 		PreviewUrl:  item.PreviewUrl,
 		Price:       item.Price,
-		NeedNotify:  item.NeedNotify,
+		IsNotify:    item.IsNotify,
 		CreatedAt:   item.CreatedAt,
 	}
 }

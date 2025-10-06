@@ -57,10 +57,10 @@ func (a *App) Run(ctx context.Context) error {
 					continue
 				}
 
-				item.NeedNotify = true
+				item.IsNotify = true
 				err = itemService.UpdateItem(ctx, item)
 				if err != nil {
-					fmt.Printf("failed to update item %d need_notify status: %v\n", item.ID, err)
+					fmt.Printf("failed to update item %d is_notify status: %v\n", item.ID, err)
 					continue
 				}
 			}

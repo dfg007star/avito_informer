@@ -10,7 +10,7 @@ import (
 
 func (r *repository) UpdateItem(ctx context.Context, item *model.Item) error {
 	query, args, err := squirrel.Update("items").
-		Set("need_notify", item.NeedNotify).
+		Set("is_notify", item.IsNotify).
 		Where(squirrel.Eq{"id": item.ID}).
 		PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {

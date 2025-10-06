@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS items (
     url TEXT,
     preview_url TEXT,
     price INT,
-    need_notify BOOLEAN DEFAULT FALSE,
+    is_notify BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP DEFAULT now(),
     CONSTRAINT fk_items_links FOREIGN KEY (link_id)

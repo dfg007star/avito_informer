@@ -1,9 +1,10 @@
 package converter
 
 import (
+	"time"
+
 	"github.com/dfg007star/avito_informer/collector/internal/model"
 	repoModel "github.com/dfg007star/avito_informer/collector/internal/repository/model"
-	"time"
 )
 
 func RepoLinkToModel(link *repoModel.Link) *model.Link {
@@ -23,7 +24,7 @@ func RepoLinkToModel(link *repoModel.Link) *model.Link {
 			Url:        dbItem.Url,
 			PreviewUrl: dbItem.PreviewUrl,
 			Price:      dbItem.Price,
-			NeedNotify: dbItem.NeedNotify,
+			IsNotify:   dbItem.IsNotify,
 			CreatedAt:  dbItem.CreatedAt,
 		}
 	}

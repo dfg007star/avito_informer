@@ -95,7 +95,7 @@ func (r *repository) GetLinkItems(ctx context.Context, link *model.Link) ([]*mod
 		"url",
 		"preview_url",
 		"price",
-		"need_notify",
+		"is_notify",
 		"created_at",
 	).
 		From("items").
@@ -125,7 +125,7 @@ func (r *repository) GetLinkItems(ctx context.Context, link *model.Link) ([]*mod
 			&item.Url,
 			&item.PreviewUrl,
 			&item.Price,
-			&item.NeedNotify,
+			&item.IsNotify,
 			&item.CreatedAt,
 		)
 		if err != nil {

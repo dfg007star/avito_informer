@@ -19,6 +19,6 @@ type Item struct {
 	PreviewUrl  string
 	ImageUrls   []string
 	Price       int
-	NeedNotify  bool
+	IsNotify    bool
 	CreatedAt   time.Time
 }

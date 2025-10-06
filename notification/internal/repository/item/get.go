@@ -20,7 +20,7 @@ func (r *repository) GetItems(ctx context.Context) ([]*model.Item, error) {
 		"url",
 		"preview_url",
 		"price",
-		"need_notify",
+		"is_notify",
 		"created_at",
 	).From("items").PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
@@ -45,7 +45,7 @@ func (r *repository) GetItems(ctx context.Context) ([]*model.Item, error) {
 			&item.Url,
 			&item.PreviewUrl,
 			&item.Price,
-			&item.NeedNotify,
+			&item.IsNotify,
 			&item.CreatedAt,
 		)
 		if err != nil {
@@ -71,9 +71,9 @@ func (r *repository) GetNotNotifiedItems(ctx context.Context) ([]*model.Item, er
 		"url",
 		"preview_url",
 		"price",
-		"need_notify",
+		"is_notify",
 		"created_at",
-	).From("items").Where(squirrel.Eq{"need_notify": false}).PlaceholderFormat(squirrel.Dollar).ToSql()
+	).From("items").Where(squirrel.Eq{"is_notify": false}).PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
@@ -96,7 +96,7 @@ func (r *repository) GetNotNotifiedItems(ctx context.Context) ([]*model.Item, er
 			&item.Url,
 			&item.PreviewUrl,
 			&item.Price,
-			&item.NeedNotify,
+			&item.IsNotify,
 			&item.CreatedAt,
 		)
 		if err != nil {

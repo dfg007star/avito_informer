@@ -1,9 +1,7 @@
-&#x2734;&#xFE0F; <b>{{.Title | escapeHTML}}</b>
+&#x2734;&#xFE0F; <a href="{{.Url | escapeHTML}}"><b>{{.Title | escapeHTML}}</b></a>
 
-&#x1F4DD; {{.Description | escapeHTML}}
+&#x1F4B0; <b>Цена:</b> <i>{{.Price}}</i>
 
-&#x1F4B0; <b>Цена:</b> {{.Price}}
+&#x23F0; {{.CreatedAt.Format "02.01.2006 15:04:05"}}
 
-&#x1F517; <a href="{{.Url | escapeHTML}}">Ссылка</a>
-
-&#x23F0; <b>Опубликовано:</b> {{.CreatedAt.Format "02.01.2006 15:04:05"}}
+&#x1F4DD; Описание: {{.Description | escapeHTML}}
