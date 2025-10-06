@@ -84,6 +84,7 @@ func (r *repository) GetNotNotifiedItems(ctx context.Context) ([]*model.Item, er
 	).From("items").
 		LeftJoin("links ON items.link_id = links.id").
 		Where(squirrel.Eq{"items.is_notify": false}).
+		OrderBy("items.id DESC").
 		PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)

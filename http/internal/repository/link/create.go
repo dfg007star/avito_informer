@@ -2,7 +2,6 @@ package link
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -13,9 +12,9 @@ import (
 
 func (r *repository) CreateLink(ctx context.Context, link *model.Link) (*model.Link, error) {
 	query, args, err := squirrel.Insert("links").
-		Columns("id", "name", "url", "min_price", "max_price", "created_at").
+		Columns("name", "url", "min_price", "max_price").
 		Values(link.Name, link.Url, link.MinPrice, link.MaxPrice).
-		Suffix("RETURNING *").
+		Suffix("RETURNING id, name, url, min_price, max_price, parsed_at, created_at").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
@@ -25,15 +24,14 @@ func (r *repository) CreateLink(ctx context.Context, link *model.Link) (*model.L
 	row := r.db.QueryRow(ctx, query, args...)
 
 	var createdLink repoModel.Link
-	var updatedAt sql.NullTime
 	err = row.Scan(
 		&createdLink.ID,
 		&createdLink.Name,
 		&createdLink.Url,
 		&createdLink.MinPrice,
 		&createdLink.MaxPrice,
+		&createdLink.ParsedAt,
 		&createdLink.CreatedAt,
-		&updatedAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan row: %w", err)
