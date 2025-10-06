@@ -1,27 +1,27 @@
 {{define "links_link"}}
-<article class="card" hx-target="this" hx-swap="outerHTML swap:0.3s">
-    <header>
-        <h4>
-            <a href="{{ .Url }}" target='_blank'>{{ .Name }}</a>
-        </h4>
+<div class="card mb-3" hx-target="this" hx-swap="outerHTML swap:0.3s">
+    <div class="card-header">
+        <h5 class="card-title">
+            <a href="{{ .Url }}" target='_blank' class="text-decoration-none">{{ .Name }}</a>
+        </h5>
+    </div>
+    <div class="card-body">
         {{if .MinPrice.Valid}}
-            <p>Min Price: {{ .MinPrice.Int64 }}</p>
+            <p class="card-text">Min Price: {{ .MinPrice.Int64 }}</p>
         {{end}}
         {{if .MaxPrice.Valid}}
-            <p>Max Price: {{ .MaxPrice.Int64 }}</p>
+            <p class="card-text">Max Price: {{ .MaxPrice.Int64 }}</p>
         {{end}}
-    </header>
-    <footer>
-        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+        <div class="d-flex justify-content-between align-items-center">
             <div>
-                <a class="button" href="/links/{{ .ID }}">Show</a>
-                <a hx-post="/links/{{ .ID }}/parse" class='button'>Parse</a>
+                <a class="btn btn-primary me-2" href="/links/{{ .ID }}">Show</a>
+                <a hx-post="/links/{{ .ID }}/parse" class='btn btn-secondary'>Parse</a>
             </div>
 
             <div>
-                <a hx-confirm="Are you sure?" hx-delete="/links/{{ .ID }}" class='button error'>Delete</a>
+                <a hx-confirm="Are you sure?" hx-delete="/links/{{ .ID }}" class='btn btn-danger'>Delete</a>
             </div>
         </div>
-    </footer>
+    </div>
 </article>
 {{end}}

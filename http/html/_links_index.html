@@ -1,6 +1,5 @@
 {{ define "links_index" }}
-<br/>
-<div id="links_list">
+<div id="links_list" class="mt-4">
     {{ range .Links }}
     {{ block "links_link" . }}{{ end }}
     {{ end }}

@@ -2,11 +2,14 @@
 
 {{ template "head" . }}
 
-{{ template "header" . }}
+<body>
+    <div class="container mt-4">
+        {{ template "header" . }}
 
-{{ template "links_form" . }}
+        {{ template "links_form" . }}
 
-{{ template "links_index" . }}
+        {{ template "links_index" . }}
+    </div>
 
 {{ template "footer" . }}
 

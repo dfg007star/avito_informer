@@ -2,7 +2,6 @@ package link
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -12,7 +11,12 @@ import (
 )
 
 func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
-	query, args, err := squirrel.Select("*").
+	query, args, err := squirrel.Select(
+		"id",
+		"name",
+		"url",
+		"parsed_at",
+		"created_at").
 		From("links").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
@@ -27,7 +31,6 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 	defer rows.Close()
 
 	var links []*repoModel.Link
-	var updatedAt sql.NullTime
 	for rows.Next() {
 		var l repoModel.Link
 		err := rows.Scan(
@@ -36,7 +39,6 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 			&l.Url,
 			&l.ParsedAt,
 			&l.CreatedAt,
-			&updatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
