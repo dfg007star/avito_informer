@@ -41,12 +41,13 @@ func (a *App) Run(ctx context.Context) error {
 				continue
 			}
 
+			// need converter!
 			for _, item := range items {
 				event := model.ItemEvent{
 					Title:       item.Title,
 					Description: item.Description,
 					Price:       item.Price,
-					Url:         item.Url,
+					Url:         "https://www.avito.ru" + item.Url,
 					PreviewUrl:  item.PreviewUrl,
 					CreatedAt:   item.CreatedAt,
 				}
