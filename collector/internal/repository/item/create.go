@@ -13,27 +13,67 @@ func (r *repository) CreateItems(ctx context.Context, items []*model.Item) error
 		return nil
 	}
 
-	fmt.Printf("creating %d items\n", len(items))
+	var uids []string
+	for _, item := range items {
+		uids = append(uids, item.Uid)
+	}
+
+	existingUIDs := make(map[string]struct{})
+	selectQuery, selectArgs, err := squirrel.Select("uid").From("items").Where(squirrel.Eq{"uid": uids}).PlaceholderFormat(squirrel.Dollar).ToSql()
+	if err != nil {
+		return fmt.Errorf("failed to build select query: %w", err)
+	}
+
+	rows, err := r.db.Query(ctx, selectQuery, selectArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to query existing uids: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var uid string
+		if err := rows.Scan(&uid); err != nil {
+			return fmt.Errorf("failed to scan existing uid: %w", err)
+		}
+		existingUIDs[uid] = struct{}{} // Add existing UID to map
+	}
+
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	var newItems []*model.Item
+	for _, item := range items {
+		if _, exists := existingUIDs[item.Uid]; !exists {
+			newItems = append(newItems, item)
+		}
+	}
+
+	if len(newItems) == 0 {
+		fmt.Println("no new items to create")
+		return nil
+	}
+
+	fmt.Printf("creating %d new items\n", len(newItems))
 
 	queryBuilder := squirrel.Insert("items").
 		Columns("uid", "link_id", "title", "price", "description", "url", "preview_url")
 
-	for _, item := range items {
+	for _, item := range newItems {
 		queryBuilder = queryBuilder.Values(item.Uid, item.LinkId, item.Title, item.Price, item.Description, item.Url, item.PreviewUrl)
 	}
 
 	query, args, err := queryBuilder.
-		Suffix("ON CONFLICT (uid) DO NOTHING").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to build query: %w", err)
+		return fmt.Errorf("failed to build insert query: %w", err)
 	}
 
 	_, err = r.db.Exec(ctx, query, args...)
 	if err != nil {
-		return fmt.Errorf("failed to exec query: %w", err)
+		return fmt.Errorf("failed to exec insert query: %w", err)
 	}
 
 	return nil

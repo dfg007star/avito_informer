@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -76,7 +75,8 @@ func (h *handler) CreateLinkHandler(w http.ResponseWriter, r *http.Request) {
 	result, err := h.linkService.CreateLink(r.Context(), link)
 	fmt.Println("handler create link", result, err)
 	if err != nil {
-		log.Fatalf("error creating link: %", err)
+		http.Error(w, fmt.Sprintf("error creating link: %v", err), http.StatusInternalServerError)
+		return
 	}
 	err = h.templates.ExecuteTemplate(w, "links_link", result)
 	if err != nil {
