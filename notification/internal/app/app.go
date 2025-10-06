@@ -44,12 +44,14 @@ func (a *App) Run(ctx context.Context) error {
 			// need converter!
 			for _, item := range items {
 				event := model.ItemEvent{
-					Title:       item.Title,
-					Description: item.Description,
-					Price:       item.Price,
-					Url:         "https://www.avito.ru" + item.Url,
-					PreviewUrl:  item.PreviewUrl,
-					CreatedAt:   item.CreatedAt,
+					Title:         item.Title,
+					Description:   item.Description,
+					Price:         item.Price,
+					Url:           "https://www.avito.ru" + item.Url,
+					PreviewUrl:    item.PreviewUrl,
+					CreatedAt:     item.CreatedAt,
+					CategoryTitle: item.CategoryTitle,
+					LinkUrl:       item.LinkUrl,
 				}
 				err := telegramService.SendItemNotification(ctx, event)
 				if err != nil {

@@ -16,6 +16,7 @@ type Item struct {
 	IsNotify    bool   `gorm:"type:boolean"`
 
 	CategoryTitle string `gorm:"type:text"`
+	LinkUrl       string `gorm:"type:text"`
 }
 
 func (Item) TableName() string {

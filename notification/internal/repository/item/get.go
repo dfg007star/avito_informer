@@ -12,17 +12,21 @@ import (
 
 func (r *repository) GetItems(ctx context.Context) ([]*model.Item, error) {
 	query, args, err := squirrel.Select(
-		"id",
-		"link_id",
-		"uid",
-		"title",
-		"description",
-		"url",
-		"preview_url",
-		"price",
-		"is_notify",
-		"created_at",
-	).From("items").PlaceholderFormat(squirrel.Dollar).ToSql()
+		"items.id",
+		"items.link_id",
+		"items.uid",
+		"items.title",
+		"items.description",
+		"items.url",
+		"items.preview_url",
+		"items.price",
+		"items.is_notify",
+		"items.created_at",
+		"links.name AS category_title",
+		"links.url AS link_url",
+	).From("items").
+		LeftJoin("links ON items.link_id = links.id").
+		PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
@@ -47,6 +51,8 @@ func (r *repository) GetItems(ctx context.Context) ([]*model.Item, error) {
 			&item.Price,
 			&item.IsNotify,
 			&item.CreatedAt,
+			&item.CategoryTitle,
+			&item.LinkUrl,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan item: %w", err)
@@ -63,17 +69,22 @@ func (r *repository) GetItems(ctx context.Context) ([]*model.Item, error) {
 
 func (r *repository) GetNotNotifiedItems(ctx context.Context) ([]*model.Item, error) {
 	query, args, err := squirrel.Select(
-		"id",
-		"link_id",
-		"uid",
-		"title",
-		"description",
-		"url",
-		"preview_url",
-		"price",
-		"is_notify",
-		"created_at",
-	).From("items").Where(squirrel.Eq{"is_notify": false}).PlaceholderFormat(squirrel.Dollar).ToSql()
+		"items.id",
+		"items.link_id",
+		"items.uid",
+		"items.title",
+		"items.description",
+		"items.url",
+		"items.preview_url",
+		"items.price",
+		"items.is_notify",
+		"items.created_at",
+		"links.name AS category_title",
+		"links.url AS link_url",
+	).From("items").
+		LeftJoin("links ON items.link_id = links.id").
+		Where(squirrel.Eq{"items.is_notify": false}).
+		PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
@@ -98,6 +109,8 @@ func (r *repository) GetNotNotifiedItems(ctx context.Context) ([]*model.Item, er
 			&item.Price,
 			&item.IsNotify,
 			&item.CreatedAt,
+			&item.CategoryTitle,
+			&item.LinkUrl,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan item: %w", err)

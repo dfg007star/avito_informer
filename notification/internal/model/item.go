@@ -23,6 +23,7 @@ type Item struct {
 	CreatedAt   time.Time
 
 	CategoryTitle string
+	LinkUrl       string
 }
 
 type ItemEvent struct {
@@ -33,4 +34,5 @@ type ItemEvent struct {
 	PreviewUrl    string
 	Price         int
 	CreatedAt     time.Time
+	LinkUrl       string
 }
