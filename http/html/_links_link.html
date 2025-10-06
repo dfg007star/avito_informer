@@ -4,6 +4,12 @@
         <h4>
             <a href="{{ .Url }}" target='_blank'>{{ .Name }}</a>
         </h4>
+        {{if .MinPrice.Valid}}
+            <p>Min Price: {{ .MinPrice.Int64 }}</p>
+        {{end}}
+        {{if .MaxPrice.Valid}}
+            <p>Max Price: {{ .MaxPrice.Int64 }}</p>
+        {{end}}
     </header>
     <footer>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">

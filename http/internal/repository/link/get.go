@@ -2,7 +2,6 @@ package link
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -12,8 +11,15 @@ import (
 )
 
 func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
-	query, args, err := squirrel.Select("*").
-		From("links").
+	query, args, err := squirrel.Select(
+		"id",
+		"name",
+		"url",
+		"min_price",
+		"max_price",
+		"parsed_at",
+		"created_at",
+	).From("links").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
@@ -27,16 +33,16 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 	defer rows.Close()
 
 	var links []*repoModel.Link
-	var updatedAt sql.NullTime
 	for rows.Next() {
 		var l repoModel.Link
 		err := rows.Scan(
 			&l.ID,
 			&l.Name,
 			&l.Url,
+			&l.MinPrice,
+			&l.MaxPrice,
 			&l.ParsedAt,
 			&l.CreatedAt,
-			&updatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
@@ -57,8 +63,15 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 }
 
 func (r *repository) GetLinkById(ctx context.Context, id string) (*model.Link, error) {
-	query, args, err := squirrel.Select("*").
-		From("links").
+	query, args, err := squirrel.Select(
+		"id",
+		"name",
+		"url",
+		"min_price",
+		"max_price",
+		"parsed_at",
+		"created_at",
+	).From("links").
 		Where(squirrel.Eq{"id": id}).
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
@@ -69,14 +82,14 @@ func (r *repository) GetLinkById(ctx context.Context, id string) (*model.Link, e
 	row := r.db.QueryRow(ctx, query, args...)
 
 	var link repoModel.Link
-	var updatedAt sql.NullTime
 	err = row.Scan(
 		&link.ID,
 		&link.Name,
 		&link.Url,
+		&link.MinPrice,
+		&link.MaxPrice,
 		&link.ParsedAt,
 		&link.CreatedAt,
-		&updatedAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan row: %w", err)

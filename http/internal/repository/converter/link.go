@@ -34,6 +34,8 @@ func RepoLinkToModel(link *repoModel.Link) *model.Link {
 		ID:        int64(link.ID),
 		Name:      link.Name,
 		Url:       link.Url,
+		MinPrice:  link.MinPrice,
+		MaxPrice:  link.MaxPrice,
 		CreatedAt: link.CreatedAt,
 		ParsedAt:  parsedAt,
 		Items:     items,

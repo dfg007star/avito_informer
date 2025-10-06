@@ -13,8 +13,8 @@ import (
 
 func (r *repository) CreateLink(ctx context.Context, link *model.Link) (*model.Link, error) {
 	query, args, err := squirrel.Insert("links").
-		Columns("name", "url").
-		Values(link.Name, link.Url).
+		Columns("name", "url", "min_price", "max_price").
+		Values(link.Name, link.Url, link.MinPrice, link.MaxPrice).
 		Suffix("RETURNING *").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
@@ -30,6 +30,8 @@ func (r *repository) CreateLink(ctx context.Context, link *model.Link) (*model.L
 		&createdLink.ID,
 		&createdLink.Name,
 		&createdLink.Url,
+		&createdLink.MinPrice,
+		&createdLink.MaxPrice,
 		&createdLink.ParsedAt,
 		&createdLink.CreatedAt,
 		&updatedAt,
