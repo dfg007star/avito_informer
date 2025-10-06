@@ -22,3 +22,12 @@ type Item struct {
 	NeedNotify  bool
 	CreatedAt   time.Time
 }
+
+type ItemEvent struct {
+	Title       string
+	Description string
+	Url         string
+	PreviewUrl  string
+	Price       int
+	CreatedAt   time.Time
+}
