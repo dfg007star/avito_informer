@@ -1,34 +1,44 @@
-services: # Раздел, описывающий контейнеры, которые требуются для работы Order-сервиса
-  postgres-avito-informer: # Контейнер с PostgreSQL, используемый для хранения данных заказов
-    image: postgres:17.0-alpine3.20
-    # Используем официальный образ PostgreSQL версии 17 на базе Alpine Linux
-    # Это лёгкая и быстрая сборка, которая экономит ресурсы
-
-    container_name: postgres-avito-informer
-    # Устанавливаем уникальное имя контейнера, чтобы было удобно обращаться к нему в CLI и при отладке
-
+services:
+  http:
+    build:
+      context: ../../..
+      dockerfile: http/Dockerfile
     env_file:
       - .env
+    depends_on:
+      - postgres-avito-informer
+    ports:
+      - "${EXTERNAL_HTTP_PORT}:${HTTP_PORT}"
+    networks:
+      - avito-informer-net
 
+  notification:
+    build:
+      context: ../../..
+      dockerfile: notification/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres-avito-informer
+    networks:
+      - avito-informer-net
+
+  postgres-avito-informer:
+    image: postgres:17.0-alpine3.20
+    container_name: postgres-avito-informer
+    hostname: postgres_avito_informer
+    env_file:
+      - .env
     volumes:
       - postgres_avito_informer_data:/var/lib/postgresql/data
-      # Определяем том, который будет использоваться для хранения данных PostgreSQL
-      # Он сохраняет данные между перезапусками контейнера
-
     ports:
-      - 5444:5432
-      # Пробрасываем внутренний порт PostgreSQL (5432) на порт хоста
-      # Это нужно, чтобы другие сервисы или инструменты могли подключиться к базе
-
+      - "${EXTERNAL_POSTGRES_PORT}:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-      # Настраиваем проверку готовности контейнера — pg_isready проверяет, принимает ли база подключения
       interval: 10s  # Интервал между проверками — каждые 10 секунд
       timeout: 5s    # Время ожидания ответа от проверки
       retries: 5     # После 5 неудачных попыток подряд контейнер считается "unhealthy"
-
     restart: unless-stopped
-
     networks:
       - avito-informer-net
 
@@ -39,5 +49,3 @@ networks:
   avito-informer-net:
     name: avito-informer-net
     external: false
-    # ВАЖНО: здесь мы создаём сеть с именем go-informer-net
-    # Другие docker-compose файлы будут к ней подключаться с external: true

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -10,11 +11,15 @@ import (
 	"github.com/dfg007star/avito_informer/collector/internal/config"
 )
 
-const configPath = "../deploy/compose/core/.env"
-
 func main() {
-	err := config.Load(configPath)
-	if err != nil {
+	var configPath string
+	if os.Getenv("RUNNING_IN_DOCKER") == "true" {
+		configPath = ""
+	} else {
+		configPath = "../deploy/compose/core/.env.local"
+	}
+
+	if err := config.Load(configPath); err != nil {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 
