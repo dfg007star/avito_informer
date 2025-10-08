@@ -12,6 +12,22 @@ services:
     networks:
       - avito-informer-net
 
+  collector:
+    build:
+      context: ../../..
+      dockerfile: collector/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres-avito-informer
+    networks:
+      - avito-informer-net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1G
+
   notification:
     build:
       context: ../../..
