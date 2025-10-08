@@ -1,6 +1,5 @@
 version: '3'
 
-# Глобальные переменные проекта
 vars:
   GO_VERSION: '1.25.1'
 
@@ -9,19 +8,46 @@ vars:
   GCI: '{{.BIN_DIR}}/gci'
   GOFUMPT: '{{.BIN_DIR}}/gofumpt'
   ENVDIR: '{{.ROOT_DIR}}/deploy/env'
+  COMPOSE_FILE: deploy/compose/core/docker-compose.yml
 
   MODULES: http collector platform
   SERVICES: http collector platform
 
 tasks:
+  update:
+    desc: update all images
+    cmds:
+      - echo "🔄 Pulling latest code..."
+      - git fetch --all
+      - git reset --hard origin/main
+      - echo "🧱 Rebuilding and restarting containers..."
+      - docker compose -f {{.COMPOSE_FILE}} pull
+      - docker compose -f {{.COMPOSE_FILE}} build --no-cache
+      - docker compose -f {{.COMPOSE_FILE}} up -d --remove-orphans
+      - echo "✅ Update complete. Current status:"
+      - docker compose -f {{.COMPOSE_FILE}} ps
+
+  rebuild:
+    desc: rebuild all images without pull from git
+    cmds:
+      - echo "♻️ Rebuilding all Docker images..."
+      - docker compose -f {{.COMPOSE_FILE}} build --no-cache
+      - docker compose -f {{.COMPOSE_FILE}} up -d --remove-orphans
+      - docker compose -f {{.COMPOSE_FILE}} ps
+
+  logs:
+    desc: Tail logs for all services
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} logs -f
+
   deps:update:
-    desc: "Обновление зависимостей в go.mod во всех модулях"
+    desc: update go.mod in all modules
     cmds:
       - |
-        echo "🔄 Обновление зависимостей в go.mod во всех модулях"
+        echo "update go.mod in all modules"
         for mod in {{.MODULES}}; do
           if [ -d "$mod" ]; then
-            echo "🔄 Обновление зависимостей в $mod"
+            echo "🔄 update go.mod in $mod"
             (cd "$mod" && go mod tidy -compat=1.25.1) || exit 1
           fi
         done
