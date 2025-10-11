@@ -17,6 +17,7 @@ import (
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
+	"github.com/dfg007star/avito_informer/collector/internal/config"
 	"github.com/dfg007star/avito_informer/collector/internal/model"
 )
 
@@ -40,7 +41,6 @@ type Parser struct {
 }
 
 func NewParser() *Parser {
-	// Create a default allocator context without proxy initially
 	opts := []chromedp.ExecAllocatorOption{
 		chromedp.Flag("headless", true),
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
@@ -64,7 +64,6 @@ func (p *Parser) SetProxies(proxyURLs []string) error {
 		p.proxyURL = ""
 	}
 
-	// Re-create allocator context with proxy
 	opts := []chromedp.ExecAllocatorOption{
 		chromedp.Flag("headless", true),
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
@@ -77,12 +76,10 @@ func (p *Parser) SetProxies(proxyURLs []string) error {
 		opts = append(opts, chromedp.ProxyServer(p.proxyURL))
 	}
 
-	// Cancel the old allocator context if it exists
 	if p.cancelAllocator != nil {
 		p.cancelAllocator()
 	}
 
-	fmt.Printf("Chromedp using proxy: %s", p.proxyURL)
 	p.allocatorCtx, p.cancelAllocator = chromedp.NewExecAllocator(context.Background(), opts...)
 
 	return nil
@@ -95,48 +92,35 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 	taskCtx, cancelTask := chromedp.NewContext(p.allocatorCtx)
 	defer cancelTask()
 
-	// Set a timeout for the task context
 	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 60*time.Second)
 	defer cancelTimeout()
 
-	const (
-		maxRetries = 3
-		retryDelay = 10 * time.Second
-	)
-
 	var err error
+	maxRetries := config.AppConfig().Parser.GetItemsMaxRetry()
 	for i := 0; i < maxRetries; i++ {
-		delay := time.Duration(1+rand.Intn(1)) * time.Second
-		fmt.Printf("waiting for %s before visiting\\n", delay)
-		time.Sleep(delay)
-
 		var res string
 		err = chromedp.Run(taskCtx,
-			network.Enable(), // Enable network domain
-			fetch.Enable(),   // Enable fetch domain for interception
+			network.Enable(),
+			fetch.Enable(),
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				// Block image requests
 				chromedp.ListenTarget(ctx, func(ev interface{}) {
 					if reqEvent, ok := ev.(*fetch.EventRequestPaused); ok {
 						go func() {
-							// Use the original ctx directly
 							if reqEvent.ResourceType == network.ResourceTypeImage {
-								log.Printf("Blocking image request: %s", reqEvent.Request.URL)
 								err := fetch.FailRequest(reqEvent.RequestID, network.ErrorReasonBlockedByClient).Do(ctx)
 								if err != nil {
-									log.Printf("Failed to block request %s: %v", reqEvent.Request.URL, err)
+									log.Printf("failed to block request %s: %v", reqEvent.Request.URL, err)
 								}
 							} else {
 								err := fetch.ContinueRequest(reqEvent.RequestID).Do(ctx)
 								if err != nil {
-									log.Printf("Failed to continue request %s: %v", reqEvent.Request.URL, err)
+									log.Printf("failed to continue request %s: %v", reqEvent.Request.URL, err)
 								}
 							}
 						}()
 					}
 				})
 
-				// Stealth JavaScript injection
 				script := `
 					Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
 					Object.defineProperty(navigator, 'platform', { get: () => 'Win32' });
@@ -169,7 +153,6 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 		)
 
 		if err == nil {
-			// Parse the HTML content
 			doc, err := goquery.NewDocumentFromReader(strings.NewReader(res))
 			if err != nil {
 				return nil, fmt.Errorf("failed to parse HTML: %w", err)
@@ -211,10 +194,9 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 			break
 		}
 
-		fmt.Printf("failed to visit %s (attempt %d/%d): %s\\n", link.Url, i+1, maxRetries, err)
+		fmt.Printf("failed to visit %s (attempt %d/%d): %s \n", link.Name, i+1, maxRetries, err)
 		if i < maxRetries-1 {
-			fmt.Printf("retrying in %s\\n", retryDelay)
-			time.Sleep(retryDelay)
+			time.Sleep(config.AppConfig().Parser.GetItemsRetryDelay())
 		}
 	}
 
@@ -222,7 +204,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 		return nil, fmt.Errorf("failed to visit url after %d attempts: %w", maxRetries, err)
 	}
 
-	fmt.Printf("found %d items\\n", len(items))
+	fmt.Printf("found %d items \n", len(items))
 
 	return items, nil
 }
@@ -231,24 +213,22 @@ func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]stri
 	taskCtx, cancelTask := chromedp.NewContext(p.allocatorCtx)
 	defer cancelTask()
 
-	// Set a timeout for the task context
-	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 60*time.Second)
+	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, config.AppConfig().Parser.GetCookieTimeout())
 	defer cancelTimeout()
 
-	log.Printf("Attempting to get cookies from %s", urlStr)
+	log.Printf("attempting to get cookies from %s", urlStr)
 
 	var cookies []*network.Cookie
 	err := chromedp.Run(taskCtx,
-		network.Enable(), // Enable network domain to get cookies
+		network.Enable(),
 		chromedp.Navigate(urlStr),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			var err error
-			cookies, err = network.GetCookies().Do(ctx) // Use network.GetCookies
+			cookies, err = network.GetCookies().Do(ctx)
 			return err
 		}),
 	)
 	if err != nil {
-		log.Printf("Error getting cookies from %s: %v", urlStr, err)
 		return nil, fmt.Errorf("failed to get cookies: %w", err)
 	}
 
@@ -257,8 +237,6 @@ func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]stri
 		cookieMap[cookie.Name] = cookie.Value
 	}
 
-	log.Printf("Found %d cookies from %s", len(cookies), urlStr)
-
 	return cookieMap, nil
 }
 
@@ -266,7 +244,6 @@ func (p *Parser) Shutdown() {
 	p.cancelAllocator()
 }
 
-// Helper function to parse proxy URL for username and password
 func parseProxyURL(proxyURL string) (string, string, bool) {
 	u, err := url.Parse(proxyURL)
 	if err != nil {

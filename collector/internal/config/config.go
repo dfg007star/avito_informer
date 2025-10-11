@@ -11,6 +11,7 @@ var appConfig *config
 
 type config struct {
 	Postgres PostgresConfig
+	Parser   ParserConfig
 }
 
 func Load(path ...string) error {
@@ -24,8 +25,14 @@ func Load(path ...string) error {
 		return err
 	}
 
+	ParserCfg, err := env.NewParserConfig()
+	if err != nil {
+		return err
+	}
+
 	appConfig = &config{
 		Postgres: PostgresCfg,
+		Parser:   ParserCfg,
 	}
 
 	return nil

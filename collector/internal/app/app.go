@@ -3,8 +3,9 @@ package app
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"time"
+
+	"github.com/dfg007star/avito_informer/collector/internal/config"
 )
 
 type App struct {
@@ -23,13 +24,12 @@ func (a *App) collect(ctx context.Context) error {
 	//	return fmt.Errorf("failed to set proxies: %w", err)
 	//}
 
-	// Get initial cookies
-	dummyAvitoURL := "https://www.avito.ru/moskva/telefony?q=iphone" // Example URL
+	dummyAvitoURL := "https://www.avito.ru/moskva/telefony?q=iphone"
 	initialCookies, err := parser.GetCookies(ctx, dummyAvitoURL)
 	if err != nil {
 		return fmt.Errorf("failed to get initial cookies: %w", err)
 	}
-	fmt.Printf("Initial cookies obtained: %v\n", initialCookies)
+	fmt.Printf("initial cookies obtained: %v", initialCookies)
 
 	for {
 		fmt.Println("starting new collection cycle")
@@ -38,29 +38,23 @@ func (a *App) collect(ctx context.Context) error {
 			return fmt.Errorf("failed to get all links: %w", err)
 		}
 
-		fmt.Printf("found %d links to process\n", len(links))
-
 		for _, link := range links {
-			fmt.Printf("collecting items for link: %s\n", link.Url)
-			items, err := parser.Parse(link, initialCookies) // Pass cookies to Parse
+			fmt.Printf("collecting items for link name: %s", link.Name)
+			items, err := parser.Parse(link, initialCookies)
 			if err != nil {
-				fmt.Printf("failed to parse link %s: %s\n", link.Url, err)
+				fmt.Printf("failed to parse link %s: %s", link.Name, err)
 				continue
 			}
 
 			err = a.diContainer.Service(ctx).CreateItems(ctx, items)
 			if err != nil {
-				fmt.Printf("failed to create items for link %s: %s\n", link.Url, err)
+				fmt.Printf("failed to create items for link %s: %s", link.Name, err)
 				continue
 			}
 
-			delay := time.Duration(15+rand.Intn(15)) * time.Second
-			fmt.Printf("waiting for %s before next link\n", delay)
+			delay := config.AppConfig().Parser.DelayBetweenLinks()
 			time.Sleep(delay)
 		}
-
-		fmt.Println("collection cycle finished, waiting for 30 seconds")
-		time.Sleep(30 * time.Second)
 	}
 }
 
