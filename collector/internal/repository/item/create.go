@@ -3,6 +3,7 @@ package item
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/dfg007star/avito_informer/collector/internal/model"
@@ -50,11 +51,11 @@ func (r *repository) CreateItems(ctx context.Context, items []*model.Item) error
 	}
 
 	if len(newItems) == 0 {
-		fmt.Println("no new items to create")
+		log.Println("no new items to create")
 		return nil
 	}
 
-	fmt.Printf("creating %d new items\n", len(newItems))
+	log.Printf("creating %d new items", len(newItems))
 
 	queryBuilder := squirrel.Insert("items").
 		Columns("uid", "link_id", "title", "price", "description", "url", "preview_url")

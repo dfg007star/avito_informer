@@ -46,6 +46,11 @@ func NewParser() *Parser {
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
 		chromedp.Flag("no-sandbox", true),
 		chromedp.Flag("start-maximized", true),
+		chromedp.Flag("disable-gpu", true),
+		chromedp.Flag("disable-dev-shm-usage", true),
+		chromedp.Flag("disable-extensions", true),
+		chromedp.Flag("disable-infobars", true),
+		chromedp.Flag("disable-setuid-sandbox", true),
 		chromedp.WindowSize(1920, 1080),
 		chromedp.UserAgent(userAgents[rand.Intn(len(userAgents))]),
 	}
@@ -194,7 +199,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 			break
 		}
 
-		fmt.Printf("failed to visit %s (attempt %d/%d): %s \n", link.Name, i+1, maxRetries, err)
+		log.Printf("failed to visit %s (attempt %d/%d): %s", link.Name, i+1, maxRetries, err)
 		if i < maxRetries-1 {
 			time.Sleep(config.AppConfig().Parser.GetItemsRetryDelay())
 		}
@@ -204,7 +209,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 		return nil, fmt.Errorf("failed to visit url after %d attempts: %w", maxRetries, err)
 	}
 
-	fmt.Printf("found %d items \n", len(items))
+	log.Printf("found %d items", len(items))
 
 	return items, nil
 }
@@ -222,6 +227,8 @@ func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]stri
 	err := chromedp.Run(taskCtx,
 		network.Enable(),
 		chromedp.Navigate(urlStr),
+		chromedp.WaitReady("body"),
+		chromedp.Sleep(2*time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			var err error
 			cookies, err = network.GetCookies().Do(ctx)

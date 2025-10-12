@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dfg007star/avito_informer/collector/internal/config"
@@ -29,26 +30,26 @@ func (a *App) collect(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to get initial cookies: %w", err)
 	}
-	fmt.Printf("initial cookies obtained: %v", initialCookies)
+	log.Printf("initial cookies obtained: %v", initialCookies)
 
 	for {
-		fmt.Println("starting new collection cycle")
+		log.Println("starting new collection cycle")
 		links, err := a.diContainer.Service(ctx).GetAllLinks(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to get all links: %w", err)
 		}
 
 		for _, link := range links {
-			fmt.Printf("collecting items for link name: %s", link.Name)
+			log.Printf("collecting items for link name: %s", link.Name)
 			items, err := parser.Parse(link, initialCookies)
 			if err != nil {
-				fmt.Printf("failed to parse link %s: %s", link.Name, err)
+				log.Printf("failed to parse link %s: %s", link.Name, err)
 				continue
 			}
 
 			err = a.diContainer.Service(ctx).CreateItems(ctx, items)
 			if err != nil {
-				fmt.Printf("failed to create items for link %s: %s", link.Name, err)
+				log.Printf("failed to create items for link %s: %s", link.Name, err)
 				continue
 			}
 
