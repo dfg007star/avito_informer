@@ -14,3 +14,7 @@ type LinkHandler interface {
 type AuthHandler interface {
 	LoginHandler(w http.ResponseWriter, r *http.Request)
 }
+
+type LogHandler interface {
+	IndexHandler(w http.ResponseWriter, r *http.Request)
+}
