@@ -46,7 +46,6 @@ func (a *App) collect(ctx context.Context) error {
 
 			loopParser := a.diContainer.Parser()
 			items, err := loopParser.Parse(link, initialCookies)
-			loopParser.CancelAllocator()
 			if err != nil {
 				log.Printf("failed to parse link %s: %s", link.Name, err)
 				continue

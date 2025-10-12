@@ -95,6 +95,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 	priceRegex := regexp.MustCompile(`[^0-9] `)
 
 	taskCtx, cancelTask := chromedp.NewContext(p.AllocatorCtx)
+	defer p.CancelAllocator()
 	defer cancelTask()
 
 	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 10*time.Second)
