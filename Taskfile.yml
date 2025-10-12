@@ -35,6 +35,12 @@ tasks:
       - docker compose -f {{.COMPOSE_FILE}} up -d --remove-orphans
       - docker compose -f {{.COMPOSE_FILE}} ps
 
+  run:
+    desc: docker compose start
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} stop
+      - docker compose -f {{.COMPOSE_FILE}} start
+
   logs:
     desc: Tail logs for all services
     cmds:

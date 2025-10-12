@@ -12,12 +12,16 @@ import (
 
 func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 	query, args, err := squirrel.Select(
-		"id",
-		"name",
-		"url",
-		"parsed_at",
-		"created_at").
-		From("links").
+		"l.id",
+		"l.name",
+		"l.url",
+		"l.parsed_at",
+		"l.created_at",
+		"count(i.id) as items_count",
+	).
+		From("links l").
+		LeftJoin("items i on i.link_id = l.id").
+		GroupBy("l.id").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
@@ -39,6 +43,7 @@ func (r *repository) GetAllLinks(ctx context.Context) ([]*model.Link, error) {
 			&l.Url,
 			&l.ParsedAt,
 			&l.CreatedAt,
+			&l.ItemsCount,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)

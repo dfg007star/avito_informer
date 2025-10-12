@@ -30,11 +30,12 @@ func RepoLinkToModel(link *repoModel.Link) *model.Link {
 	}
 
 	return &model.Link{
-		ID:        int64(link.ID),
-		Name:      link.Name,
-		Url:       link.Url,
-		CreatedAt: link.CreatedAt,
-		ParsedAt:  parsedAt,
-		Items:     items,
+		ID:         int64(link.ID),
+		Name:       link.Name,
+		Url:        link.Url,
+		CreatedAt:  link.CreatedAt,
+		ParsedAt:   parsedAt,
+		Items:      items,
+		ItemsCount: link.ItemsCount,
 	}
 }

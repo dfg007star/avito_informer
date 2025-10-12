@@ -193,6 +193,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 					Description: s.Find("meta[itemprop='description']").AttrOr("content", ""),
 					Url:         s.Find("a[itemprop='url']").AttrOr("href", ""),
 					PreviewUrl:  imageUrls[0],
+					IsNotify:    link.ItemsCount == 0,
 				}
 				items = append(items, item)
 			})
