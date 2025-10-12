@@ -97,7 +97,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 	taskCtx, cancelTask := chromedp.NewContext(p.AllocatorCtx)
 	defer cancelTask()
 
-	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 60*time.Second)
+	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 10*time.Second)
 	defer cancelTimeout()
 
 	var err error

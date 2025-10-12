@@ -21,7 +21,7 @@ func (a *App) Run(ctx context.Context) error {
 func (a *App) collect(ctx context.Context) error {
 	dummyAvitoURL := "https://www.avito.ru/moskva/telefony?q=iphone"
 	parser := a.diContainer.Parser()
-	defer parser.CancelAllocator()
+	//defer parser.CancelAllocator()
 	//proxyURL := "http://LUXzR9:QV93K7@185.202.2.10:8000"
 	//if err := parser.SetProxies([]string{proxyURL}); err != nil {
 	//	return fmt.Errorf("failed to set proxies: %w", err)
@@ -31,6 +31,7 @@ func (a *App) collect(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to get initial cookies: %w", err)
 	}
+	parser.CancelAllocator()
 	log.Printf("initial cookies obtained: %v", initialCookies)
 
 	for {
@@ -44,7 +45,7 @@ func (a *App) collect(ctx context.Context) error {
 			log.Printf("collecting items for link name: %s", link.Name)
 
 			loopParser := a.diContainer.Parser()
-			items, err := parser.Parse(link, initialCookies)
+			items, err := loopParser.Parse(link, initialCookies)
 			loopParser.CancelAllocator()
 			if err != nil {
 				log.Printf("failed to parse link %s: %s", link.Name, err)
