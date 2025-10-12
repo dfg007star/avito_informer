@@ -11,6 +11,7 @@ type httpEnvConfig struct {
 	Host        string        `env:"HTTP_HOST,required"`
 	Port        string        `env:"HTTP_PORT,required"`
 	ReadTimeout time.Duration `env:"HTTP_READ_TIMEOUT,required"`
+	Password    string        `env:"HTTP_PASSWORD,required"`
 }
 
 type httpConfig struct {
@@ -32,4 +33,8 @@ func (cfg *httpConfig) Address() string {
 
 func (cfg *httpConfig) ReadTimeout() time.Duration {
 	return cfg.raw.ReadTimeout
+}
+
+func (cfg *httpConfig) Password() string {
+	return cfg.raw.Password
 }

@@ -72,8 +72,9 @@ func (a *App) initMigrator(ctx context.Context) error {
 }
 
 func (a *App) initHTTPServer(ctx context.Context) error {
-	handler := a.diContainer.LinkHandler(ctx)
-	router := a.diContainer.LinkRouter(ctx, handler)
+	linkHandler := a.diContainer.LinkHandler(ctx)
+	authHandler := a.diContainer.AuthHandler(ctx)
+	router := a.diContainer.LinkRouter(ctx, linkHandler, authHandler)
 
 	a.httpServer = &http.Server{
 		Addr:              config.AppConfig().HTTP.Address(),

@@ -10,3 +10,7 @@ type LinkHandler interface {
 	ShowLinkHandler(w http.ResponseWriter, r *http.Request)
 	DeleteLinkHandler(w http.ResponseWriter, r *http.Request)
 }
+
+type AuthHandler interface {
+	LoginHandler(w http.ResponseWriter, r *http.Request)
+}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/dfg007star/avito_informer/http/internal/config"
 	"github.com/dfg007star/avito_informer/http/internal/handler"
+	auth "github.com/dfg007star/avito_informer/http/internal/handler/auth"
 	linkHandler "github.com/dfg007star/avito_informer/http/internal/handler/link"
 	repository "github.com/dfg007star/avito_informer/http/internal/repository"
 	linkRepository "github.com/dfg007star/avito_informer/http/internal/repository/link"
@@ -19,6 +20,7 @@ import (
 type diContainer struct {
 	linkRouter     *http.ServeMux
 	linkHandler    handler.LinkHandler
+	authHandler    handler.AuthHandler
 	linkService    service.LinkService
 	linkRepository repository.LinkRepository
 
@@ -29,15 +31,18 @@ func NewDiContainer() *diContainer {
 	return &diContainer{}
 }
 
-func (d *diContainer) LinkRouter(ctx context.Context, handler handler.LinkHandler) *http.ServeMux {
+func (d *diContainer) LinkRouter(ctx context.Context, linkHandler handler.LinkHandler, authHandler handler.AuthHandler) *http.ServeMux {
 	if d.linkRouter == nil {
 		r := http.NewServeMux()
-		r.Handle("/", http.FileServer(http.Dir("./static/")))
-		r.HandleFunc("GET /{$}", handler.IndexHandler)
-		r.HandleFunc("POST /links", handler.CreateLinkHandler)
-		r.HandleFunc("DELETE /links/{id}", handler.DeleteLinkHandler)
-		r.HandleFunc("GET /links/{id}", handler.ShowLinkHandler)
-		// r.HandleFunc("POST /links/{id}/parse", handler.ParseLinkHandler)
+
+		fileServer := http.FileServer(http.Dir("./static/"))
+		r.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
+		r.Handle("GET /{$}", auth.Middleware(http.HandlerFunc(linkHandler.IndexHandler)))
+		r.Handle("POST /links", auth.Middleware(http.HandlerFunc(linkHandler.CreateLinkHandler)))
+		r.Handle("DELETE /links/{id}", auth.Middleware(http.HandlerFunc(linkHandler.DeleteLinkHandler)))
+		r.Handle("GET /links/{id}", auth.Middleware(http.HandlerFunc(linkHandler.ShowLinkHandler)))
+		r.HandleFunc("/login", authHandler.LoginHandler)
 
 		d.linkRouter = r
 	}
@@ -56,6 +61,19 @@ func (d *diContainer) LinkHandler(ctx context.Context) handler.LinkHandler {
 	}
 
 	return d.linkHandler
+}
+
+func (d *diContainer) AuthHandler(ctx context.Context) handler.AuthHandler {
+	if d.authHandler == nil {
+		tmpl, err := template.ParseGlob("./html/*.html")
+		if err != nil {
+			fmt.Errorf("failed to parse templates: %w", err)
+		}
+
+		d.authHandler = auth.NewHandler(tmpl)
+	}
+
+	return d.authHandler
 }
 
 func (d *diContainer) LinkService(ctx context.Context) service.LinkService {

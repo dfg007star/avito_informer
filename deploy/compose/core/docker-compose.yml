@@ -22,11 +22,13 @@ services:
       - postgres-avito-informer
     networks:
       - avito-informer-net
+    shm_size: '512m'
     deploy:
       resources:
         limits:
           cpus: "1.5"
           memory: 1G
+    restart: unless-stopped
 
   notification:
     build:

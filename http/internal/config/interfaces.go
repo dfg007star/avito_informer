@@ -12,4 +12,5 @@ type PostgresConfig interface {
 type HTTPConfig interface {
 	Address() string
 	ReadTimeout() time.Duration
+	Password() string
 }
