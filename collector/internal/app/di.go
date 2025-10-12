@@ -24,9 +24,12 @@ func NewDiContainer() *diContainer {
 }
 
 func (d *diContainer) Parser() *parser.Parser {
-	if d.parser == nil {
-		d.parser = parser.NewParser()
-	}
+	//if d.parser == nil {
+	//	d.parser = parser.NewParser()
+	//}
+
+	// try spawn every loop new parser!
+	d.parser = parser.NewParser()
 
 	return d.parser
 }

@@ -35,8 +35,8 @@ var userAgents = []string{
 }
 
 type Parser struct {
-	allocatorCtx    context.Context
-	cancelAllocator context.CancelFunc
+	AllocatorCtx    context.Context
+	CancelAllocator context.CancelFunc
 	proxyURL        string
 }
 
@@ -57,8 +57,8 @@ func NewParser() *Parser {
 	allocatorCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 
 	return &Parser{
-		allocatorCtx:    allocatorCtx,
-		cancelAllocator: cancel,
+		AllocatorCtx:    allocatorCtx,
+		CancelAllocator: cancel,
 	}
 }
 
@@ -81,11 +81,11 @@ func (p *Parser) SetProxies(proxyURLs []string) error {
 		opts = append(opts, chromedp.ProxyServer(p.proxyURL))
 	}
 
-	if p.cancelAllocator != nil {
-		p.cancelAllocator()
+	if p.CancelAllocator != nil {
+		p.CancelAllocator()
 	}
 
-	p.allocatorCtx, p.cancelAllocator = chromedp.NewExecAllocator(context.Background(), opts...)
+	p.AllocatorCtx, p.CancelAllocator = chromedp.NewExecAllocator(context.Background(), opts...)
 
 	return nil
 }
@@ -94,7 +94,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 	var items []*model.Item
 	priceRegex := regexp.MustCompile(`[^0-9] `)
 
-	taskCtx, cancelTask := chromedp.NewContext(p.allocatorCtx)
+	taskCtx, cancelTask := chromedp.NewContext(p.AllocatorCtx)
 	defer cancelTask()
 
 	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 60*time.Second)
@@ -209,13 +209,11 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 		return nil, fmt.Errorf("failed to visit url after %d attempts: %w", maxRetries, err)
 	}
 
-	log.Printf("found %d items", len(items))
-
 	return items, nil
 }
 
 func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]string, error) {
-	taskCtx, cancelTask := chromedp.NewContext(p.allocatorCtx)
+	taskCtx, cancelTask := chromedp.NewContext(p.AllocatorCtx)
 	defer cancelTask()
 
 	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, config.AppConfig().Parser.GetCookieTimeout())
@@ -248,7 +246,7 @@ func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]stri
 }
 
 func (p *Parser) Shutdown() {
-	p.cancelAllocator()
+	p.CancelAllocator()
 }
 
 func parseProxyURL(proxyURL string) (string, string, bool) {
