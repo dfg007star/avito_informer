@@ -27,7 +27,7 @@ func (a *App) collect(ctx context.Context) error {
 	//	return fmt.Errorf("failed to set proxies: %w", err)
 	//}
 
-	initialCookies, err := parser.GetCookies(ctx, dummyAvitoURL)
+	initialCookies, err := parser.GetCookies(dummyAvitoURL)
 	if err != nil {
 		return fmt.Errorf("failed to get initial cookies: %w", err)
 	}

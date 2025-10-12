@@ -213,7 +213,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 	return items, nil
 }
 
-func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]string, error) {
+func (p *Parser) GetCookies(urlStr string) (map[string]string, error) {
 	taskCtx, cancelTask := chromedp.NewContext(p.AllocatorCtx)
 	defer cancelTask()
 
@@ -227,7 +227,7 @@ func (p *Parser) GetCookies(ctx context.Context, urlStr string) (map[string]stri
 		network.Enable(),
 		chromedp.Navigate(urlStr),
 		chromedp.WaitReady("body"),
-		chromedp.Sleep(2*time.Second),
+		chromedp.Sleep(3*time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			var err error
 			cookies, err = network.GetCookies().Do(ctx)
