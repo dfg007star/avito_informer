@@ -1,7 +1,8 @@
 FROM golang:1.25.1-alpine AS builder
 WORKDIR /app
 
-COPY go.mod go.sum go.work go.work.sum ./
+RUN apk add --no-cache git bash
+COPY go.mod go.sum go.work ./
 
 COPY http/ ./http/
 COPY collector/ ./collector/
@@ -18,5 +19,5 @@ WORKDIR /app
 
 COPY --from=builder /app/server .
 
-EXPOSE 8080
+EXPOSE 8082
 CMD ["./server"]

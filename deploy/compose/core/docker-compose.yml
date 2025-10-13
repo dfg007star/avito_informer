@@ -23,11 +23,8 @@ services:
     networks:
       - avito-informer-net
     shm_size: '512m'
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1G
+    mem_limit: 500m
+    cpus: 1
     restart: unless-stopped
 
   notification:
