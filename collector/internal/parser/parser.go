@@ -51,7 +51,8 @@ func NewParser() *Parser {
 		chromedp.Flag("disable-extensions", true),
 		chromedp.Flag("disable-infobars", true),
 		chromedp.Flag("disable-setuid-sandbox", true),
-		chromedp.WindowSize(1920, 1080),
+		chromedp.Flag("single-process", true),
+		chromedp.WindowSize(1366, 768),
 		chromedp.UserAgent(userAgents[rand.Intn(len(userAgents))]),
 	}
 	allocatorCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
@@ -94,11 +95,13 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 	var items []*model.Item
 	priceRegex := regexp.MustCompile(`[^0-9] `)
 
-	taskCtx, cancelTask := chromedp.NewContext(p.AllocatorCtx)
-	defer p.CancelAllocator()
+	taskCtx, cancelTask := chromedp.NewContext(
+		p.AllocatorCtx,
+		chromedp.WithLogf(log.Printf),
+	)
 	defer cancelTask()
 
-	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 10*time.Second)
+	taskCtx, cancelTimeout := context.WithTimeout(taskCtx, 45*time.Second)
 	defer cancelTimeout()
 
 	var err error
@@ -154,6 +157,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 				return nil
 			}),
 			chromedp.Navigate(link.Url),
+			chromedp.WaitReady("body"),
 			chromedp.WaitVisible("div[data-marker='item']", chromedp.ByQuery),
 			chromedp.OuterHTML("html", &res),
 		)
