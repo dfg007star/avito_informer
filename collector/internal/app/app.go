@@ -16,16 +16,11 @@ type App struct {
 
 func (a *App) Run(ctx context.Context) error {
 	chromeInstance := a.diContainer.Parser()
-	//defer chromeInstance.Shutdown()
 	return a.collect(ctx, chromeInstance)
 }
 
 func (a *App) collect(ctx context.Context, chromeInstance *parser.Parser) error {
 	dummyAvitoURL := "https://www.avito.ru/moskva/telefony?q=iphone"
-	//proxyURL := "http://LUXzR9:QV93K7@185.202.2.10:8000"
-	//if err := parser.SetProxies([]string{proxyURL}); err != nil {
-	//	return fmt.Errorf("failed to set proxies: %w", err)
-	//}
 
 	initialCookies, err := chromeInstance.GetCookies(dummyAvitoURL)
 	if err != nil {

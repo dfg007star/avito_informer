@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -37,7 +36,6 @@ var userAgents = []string{
 type Parser struct {
 	AllocatorCtx    context.Context
 	CancelAllocator context.CancelFunc
-	proxyURL        string
 }
 
 func NewParser() *Parser {
@@ -51,7 +49,6 @@ func NewParser() *Parser {
 		chromedp.Flag("disable-extensions", true),
 		chromedp.Flag("disable-infobars", true),
 		chromedp.Flag("disable-setuid-sandbox", true),
-		chromedp.Flag("single-process", true),
 		chromedp.WindowSize(1366, 768),
 		chromedp.UserAgent(userAgents[rand.Intn(len(userAgents))]),
 	}
@@ -61,34 +58,6 @@ func NewParser() *Parser {
 		AllocatorCtx:    allocatorCtx,
 		CancelAllocator: cancel,
 	}
-}
-
-func (p *Parser) SetProxies(proxyURLs []string) error {
-	if len(proxyURLs) > 0 {
-		p.proxyURL = proxyURLs[0] // chromedp only supports one proxy at a time
-	} else {
-		p.proxyURL = ""
-	}
-
-	opts := []chromedp.ExecAllocatorOption{
-		chromedp.Flag("headless", true),
-		chromedp.Flag("disable-blink-features", "AutomationControlled"),
-		chromedp.Flag("no-sandbox", true),
-		chromedp.Flag("start-maximized", true),
-		chromedp.WindowSize(1920, 1080),
-		chromedp.UserAgent(userAgents[rand.Intn(len(userAgents))]),
-	}
-	if p.proxyURL != "" {
-		opts = append(opts, chromedp.ProxyServer(p.proxyURL))
-	}
-
-	if p.CancelAllocator != nil {
-		p.CancelAllocator()
-	}
-
-	p.AllocatorCtx, p.CancelAllocator = chromedp.NewExecAllocator(context.Background(), opts...)
-
-	return nil
 }
 
 func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.Item, error) {
@@ -253,16 +222,4 @@ func (p *Parser) GetCookies(urlStr string) (map[string]string, error) {
 
 func (p *Parser) Shutdown() {
 	p.CancelAllocator()
-}
-
-func parseProxyURL(proxyURL string) (string, string, bool) {
-	u, err := url.Parse(proxyURL)
-	if err != nil {
-		return "", "", false
-	}
-	if u.User != nil {
-		password, _ := u.User.Password()
-		return u.User.Username(), password, true
-	}
-	return "", "", false
 }

@@ -25,7 +25,6 @@ services:
     restart: unless-stopped
     shm_size: "1g"
     mem_limit: 1g
-    cpus: 0.9
     deploy:
       resources:
         limits:
