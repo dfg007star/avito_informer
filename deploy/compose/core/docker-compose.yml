@@ -31,7 +31,7 @@ services:
       context: ../../..
       dockerfile: collector/Dockerfile
     environment:
-      PROXY: "http://proxy1:port"
+      PROXY: "http://user:pass@proxy1:port"
     env_file:
       - .env
     depends_on:
