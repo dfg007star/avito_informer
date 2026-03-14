@@ -11,6 +11,7 @@ type parserEnvConfig struct {
 	GetCookieTimeout   time.Duration `env:"GET_COOKIE_TIMEOUT,required"`
 	GetItemsRetryDelay time.Duration `env:"GET_ITEMS_RETRY_DELAY,required"`
 	GetItemsMaxRetry   int           `env:"GET_ITEMS_MAX_RETRY,required"`
+	Proxy              string        `env:"PROXY"`
 }
 
 type parserConfig struct {
@@ -40,4 +41,8 @@ func (cfg *parserConfig) GetItemsRetryDelay() time.Duration {
 
 func (cfg *parserConfig) GetItemsMaxRetry() int {
 	return cfg.raw.GetItemsMaxRetry
+}
+
+func (cfg *parserConfig) Proxy() string {
+	return cfg.raw.Proxy
 }

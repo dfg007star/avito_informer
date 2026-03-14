@@ -23,16 +23,24 @@ services:
     networks:
       - avito-informer-net
     restart: unless-stopped
-    shm_size: "1g"
-    mem_limit: 1g
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1g
-        reservations:
-          cpus: '0.5'
-          memory: 512m
+    shm_size: "2g"
+    mem_limit: 2g
+
+  collector-proxy-1:
+    build:
+      context: ../../..
+      dockerfile: collector/Dockerfile
+    environment:
+      PROXY: "http://proxy1:port"
+    env_file:
+      - .env
+    depends_on:
+      - postgres-avito-informer
+    networks:
+      - avito-informer-net
+    restart: unless-stopped
+    shm_size: "2g"
+    mem_limit: 2g
 
   notification:
     build:

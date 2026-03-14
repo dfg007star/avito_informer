@@ -65,6 +65,7 @@ func (r *repository) CreateItems(ctx context.Context, items []*model.Item) error
 	}
 
 	query, args, err := queryBuilder.
+		Suffix("ON CONFLICT (uid) DO NOTHING").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 

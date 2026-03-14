@@ -12,4 +12,5 @@ type ParserConfig interface {
 	GetCookieTimeout() time.Duration
 	GetItemsRetryDelay() time.Duration
 	GetItemsMaxRetry() int
+	Proxy() string
 }
