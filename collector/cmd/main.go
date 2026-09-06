@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -28,13 +30,11 @@ func main() {
 
 	a, err := app.New(appCtx)
 	if err != nil {
-		fmt.Errorf("failed to create collector service: %w", err)
-		return
+		log.Fatalf("failed to create collector service: %s", err)
 	}
 
 	err = a.Run(appCtx)
-	if err != nil {
-		fmt.Errorf("failed to run collector service: %w", err)
-		return
+	if err != nil && !errors.Is(err, context.Canceled) {
+		log.Fatalf("collector service stopped with error: %s", err)
 	}
 }

@@ -29,13 +29,26 @@ func (a *App) collect(ctx context.Context, chromeInstance *parser.Parser) error 
 	log.Printf("initial cookies obtained: %v", initialCookies)
 
 	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+
 		log.Println("starting new collection cycle")
 		links, err := a.diContainer.Service(ctx).GetAllLinks(ctx)
 		if err != nil {
-			return fmt.Errorf("failed to get all links: %w", err)
+			// Transient DB errors must not kill the process; log and retry next cycle.
+			log.Printf("failed to get all links: %s", err)
+			if !sleepCtx(ctx, config.AppConfig().Parser.DelayBetweenLinks()) {
+				return ctx.Err()
+			}
+			continue
 		}
 
 		for _, link := range links {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
+
 			log.Printf("collecting items for link name: %s", link.Name)
 
 			items, err := chromeInstance.Parse(link, initialCookies)
@@ -50,9 +63,28 @@ func (a *App) collect(ctx context.Context, chromeInstance *parser.Parser) error 
 				continue
 			}
 
-			delay := config.AppConfig().Parser.DelayBetweenLinks()
-			time.Sleep(delay)
+			if !sleepCtx(ctx, config.AppConfig().Parser.DelayBetweenLinks()) {
+				return ctx.Err()
+			}
 		}
+
+		// Always pause between cycles, even when there are no links, so an empty
+		// links table does not busy-spin.
+		if !sleepCtx(ctx, config.AppConfig().Parser.DelayBetweenLinks()) {
+			return ctx.Err()
+		}
+	}
+}
+
+// sleepCtx sleeps for d or until ctx is cancelled. Returns false if cancelled.
+func sleepCtx(ctx context.Context, d time.Duration) bool {
+	t := time.NewTimer(d)
+	defer t.Stop()
+	select {
+	case <-ctx.Done():
+		return false
+	case <-t.C:
+		return true
 	}
 }
 

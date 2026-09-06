@@ -159,6 +159,11 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 					}
 				})
 
+				var previewURL string
+				if len(imageUrls) > 0 {
+					previewURL = imageUrls[0]
+				}
+
 				item := &model.Item{
 					LinkId:      link.ID,
 					Uid:         uid,
@@ -166,7 +171,7 @@ func (p *Parser) Parse(link *model.Link, cookies map[string]string) ([]*model.It
 					Price:       price,
 					Description: s.Find("meta[itemprop='description']").AttrOr("content", ""),
 					Url:         s.Find("a[itemprop='url']").AttrOr("href", ""),
-					PreviewUrl:  imageUrls[0],
+					PreviewUrl:  previewURL,
 					IsNotify:    link.ItemsCount == 0,
 				}
 				items = append(items, item)
