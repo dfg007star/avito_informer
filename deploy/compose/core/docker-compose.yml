@@ -18,26 +18,18 @@ services:
       dockerfile: collector/Dockerfile
     env_file:
       - .env
-    depends_on:
-      - postgres-avito-informer
-    networks:
-      - avito-informer-net
-    restart: unless-stopped
-    shm_size: "2g"
-    mem_limit: 2g
-
-  collector-proxy-1:
-    build:
-      context: ../../..
-      dockerfile: collector/Dockerfile
     environment:
-      PROXY: "http://proxy1:port"
-    env_file:
-      - .env
+      # flip to "true" (with VNC_PASSWORD in .env) for the one-time profile login
+      VNC_ENABLED: "${COLLECTOR_VNC_ENABLED:-false}"
     depends_on:
       - postgres-avito-informer
     networks:
       - avito-informer-net
+    ports:
+      # VNC — only reachable when VNC_ENABLED=true; bound to localhost
+      - "127.0.0.1:${COLLECTOR_VNC_PORT:-5900}:5900"
+    volumes:
+      - avito_profile:/data/avito-profile
     restart: unless-stopped
     shm_size: "2g"
     mem_limit: 2g
@@ -74,6 +66,7 @@ services:
 
 volumes:
   postgres_avito_informer_data:
+  avito_profile:
 
 networks:
   avito-informer-net:

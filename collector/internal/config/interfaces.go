@@ -9,8 +9,12 @@ type PostgresConfig interface {
 
 type ParserConfig interface {
 	DelayBetweenLinks() time.Duration
+	LinkDelayRange() (min, max time.Duration)
 	GetCookieTimeout() time.Duration
 	GetItemsRetryDelay() time.Duration
 	GetItemsMaxRetry() int
 	Proxy() string
+	ProfileDir() string
+	NavTimeout() time.Duration
+	Headless() bool
 }
