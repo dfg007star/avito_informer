@@ -90,11 +90,17 @@ logged-in browser**, scraping **serially** at a deliberately slow, jittered cade
 ## Phasing
 
 1. **Loop hardening** — `ctx.Done()`, always-sleep, propagate errors instead of silent
-   exit, guard `imageUrls[0]`, call `Shutdown`. Ships on its own.
+   exit, guard `imageUrls[0]`, call `Shutdown`. Ships on its own. — **done** (`8f07d7b`)
 2. **Persistent browser + profile** — one context, `UserDataDir`, Xvfb + VNC in the image,
-   reuse-tab scraping, per-cycle recycle. Bootstrap doc.
-3. **Block detection + backoff + Telegram alert.**
-4. **Telegram command channel** + collector internal endpoint + `http` dashboard.
+   reuse-tab scraping, per-cycle recycle. Bootstrap doc. — **done** (`dfa5094`)
+   - Block detection (`ErrBlocked` when the results grid never renders) and the 10m/30m/1h
+     backoff landed here too, ahead of schedule.
+   - First live test: 50/50 items from an Avito search in one pass, no challenge — even
+     before the profile was logged in. The slow, single-context, non-headless approach
+     alone cleared the bar; login is expected to add margin, not be load-bearing.
+3. **Telegram alert on block** + `/status` from the phone.
+4. **Telegram command channel** (`/pause` `/resume` `/shot` `/scrape`) + collector internal
+   endpoint + `http` dashboard.
 5. *(later, out of scope)* proxy per instance, multiple accounts.
 
 ## Consequences
